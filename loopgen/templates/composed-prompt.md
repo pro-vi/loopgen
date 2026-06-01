@@ -53,8 +53,9 @@ logic that turns a body template into a composed prompt.
 list is the *superset* across archetypes; a section appears in a composed prompt
 only if that archetype's body carries it. A shared block already inlined in a
 body is **not** re-emitted from its primitive file (no double-emission), and the
-assembler never adds a section the archetype's legacy body lacked — doing so
-breaks the U11 backward-compat invariant.
+assembler never adds a section the archetype's legacy body lacked except for
+the explicit U11 compatibility deltas: the provenance preamble and the shared
+frontier pressure-accounting block.
 
 ## Provenance preamble (ALWAYS — emit with values filled)
 
@@ -102,7 +103,8 @@ is invisible — the preamble MUST enumerate every divergence axis + its source.
    - Only when frontload resolved a concrete benchmark/eval/harness object,
      evaluation unit, and durable evidence location.
    - Replace `{{BENCHMARK_FRONTIER_MODE}}` with the "Benchmark Frontier Mode"
-     block from the primitive.
+     block from the primitive, resolving any include markers carried by that
+     block before stripping dead sections.
    - Otherwise strip `{{BENCHMARK_FRONTIER_MODE}}` entirely. Pure frontier keeps
      pressure accounting and does not inherit benchmark artifact roles.
    - Record `overlay: benchmark-frontier` in provenance when active. The
@@ -126,9 +128,10 @@ is invisible — the preamble MUST enumerate every divergence axis + its source.
 
 ## Backward-compatibility invariant (U11 gate)
 
-For a **pure** archetype (no divergences; consult tier as detected), steps
-1–4 + 7–8 reproduce the legacy skill's body verbatim — the ONLY added content
-is the Provenance preamble. The U11 probe diffs composed output against legacy
-output and accepts exactly two difference classes: (a) the provenance preamble,
-(b) cosmetic whitespace/ordering. Any load-bearing structural difference on a
-pure case fails the probe.
+For a **pure** archetype (no divergences; no conditional overlay active beyond
+detected consult degradation), steps 1–6 + 8–9 reproduce the legacy skill's body
+except for the accepted compatibility deltas. The U11 probe diffs composed output
+against the legacy reference and accepts exactly three difference classes:
+(a) the provenance preamble, (b) the shared pressure-accounting block for pure
+frontier only, and (c) cosmetic whitespace/ordering. Any other load-bearing
+structural difference on a pure case fails the probe.

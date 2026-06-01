@@ -144,11 +144,3 @@ Phase 1–3 procedure, diff the result against the legacy body
 provenance / cosmetic / load-bearing. Rows 1–4 must show no load-bearing
 difference; row 5 must contain the hybrid sections; row 6 must drop consult
 sections; row 7 must halt with an error.
-
-For the frontier two-tier split, run:
-
-```bash
-python3 tools/verify_loopgen_contracts.py
-python3 tools/verify_loopgen_contracts.py --print pure-frontier
-python3 tools/verify_loopgen_contracts.py --print benchmark-frontier
-```

@@ -10,6 +10,8 @@ T0-T6 answers "how mature is this repo's measurement?" The eval ladder answers
 
 Only inside the benchmark-frontier overlay.
 
+---
+
 ## Ladder
 
 1. **Compliance** — candidate satisfies format, API, scope, and forbidden

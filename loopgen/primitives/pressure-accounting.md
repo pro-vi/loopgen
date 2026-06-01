@@ -11,6 +11,8 @@ benchmark artifact system.
 Every prompt whose nearest archetype is `frontier`. It is universal for
 frontier, independent of any benchmark-frontier overlay.
 
+---
+
 ## Pressure record
 
 Record these fields in the findings ledger or `loop/STATE.md`:

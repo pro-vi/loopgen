@@ -219,7 +219,7 @@ pressure discovery: <what was searched/evaluated> - <pressure found or why none>
 expansion ramp: <new radius considered> - <ramp started or why none>
 pressure_status: <open/paid/blocked/exhausted>
 pressure_debt: <none/low/medium/high/explicitly_deferred>
-checkpoint_reason: <reason, required unless pressure_status=open>
+checkpoint_reason: <plateau_after_active_pressure/budget_exhausted/evaluator_invalid/risk_limit_hit/target_gap_unresolved/negative_result_saved; required for every checkpoint; pressure_status=open checkpoint is invalid>
 next_pressure: <next trace/artifact/dimension/intervention or none-with-reason>
 ```
 

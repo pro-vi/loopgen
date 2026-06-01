@@ -58,10 +58,26 @@ Each row records:
 - `dimension`
 - `metric_vector`
 - `status`
-- paths to compliance, smoke, search, holdout, adversarial, and meta-eval traces
+- paths to compliance, smoke, and search traces; holdout, adversarial, and
+  meta-eval trace paths stay null until that pressure is applied
 
-A row missing `hypothesis`, `operator`, or a trace path cannot update the
-`FRONTIER` role.
+A row missing `hypothesis`, `operator`, or its compliance/smoke/search trace
+paths cannot update the `FRONTIER` role.
+
+A status may not outrun its evidence or its verdict. A trace pays for a status
+only when it is non-null, parseable, linked to this candidate and rung, and
+records a verdict compatible with the claim:
+
+- `holdout_confirmed` requires a `holdout_trace` recording a passing holdout
+  verdict; `holdout_regressed` requires one recording a failing/regressing verdict.
+- `pressure_paid` requires a stronger-pressure trace whose payload supports the
+  claim: a passing `holdout_trace`, an `adversarial_trace` recording the required
+  expected-green/expected-red control verdicts, or a `meta_eval_trace` bounding
+  evaluator risk. A non-null path alone does not pay pressure debt.
+
+Deferred pressure is not a candidate status; it is a `FRONTIER`-level fact
+(`pressure_status: blocked`, `pressure_debt: explicitly_deferred`, with a named
+`blocker`, `next_pressure`, and `claim_scope: search_only`).
 
 ### Candidate lifecycle
 
@@ -72,8 +88,15 @@ proposed
   -> search_scored
   -> frontier_member | rejected
   -> holdout_confirmed | holdout_regressed
-  -> pressure_paid | pressure_deferred
+  -> pressure_paid
 ```
+
+Deferred pressure is **not** a candidate status. A search winner whose stronger
+pressure is blocked stays at its earned status (e.g. `frontier_member`) with the
+unpaid traces `null`; the deferral lives on the owning `FRONTIER` record
+(`pressure_status: blocked`, `pressure_debt: explicitly_deferred`, `blocker`,
+`next_pressure`, `claim_scope: search_only`). This keeps "I gave up" from
+reading as "I advanced a rung."
 
 ### Promotion rule
 
@@ -85,8 +108,7 @@ budget, scope, or authority blocks stronger pressure.
 If evaluator health is anything other than calibrated, the loop may claim
 harness progress, not product progress.
 
-Use `primitives/eval-ladder.md` for the candidate promotion ladder:
-compliance, smoke, search, holdout, adversarial controls, and meta-eval.
+{{INCLUDE primitives/eval-ladder.md}}
 
 ### Green-trace rule
 
