@@ -143,4 +143,12 @@ Phase 1–3 procedure, diff the result against the legacy body
 (`templates/bodies/<archetype>-body.md`), and classify each difference as
 provenance / cosmetic / load-bearing. Rows 1–4 must show no load-bearing
 difference; row 5 must contain the hybrid sections; row 6 must drop consult
-sections; row 7 must halt with an error.
+sections; row 7 must halt with an error; row 8 must activate the overlay (emit
+the `DOMAIN_SPEC` / `BENCHMARK` / `CANDIDATES` / `FRONTIER` / `traces` roles and
+the eval ladder, with classification distance unchanged and the pure-frontier
+render free of the candidate bundle); row 9 must reject the green-trace /
+zero-OPEN / no-expansion shape as a checkpoint (expand a candidate/case/control,
+or halt `PAUSED_EXTERNAL` with `pressure_debt: explicitly_deferred`).
+
+All nine rows are required; a gate run that stops at row 7 does not exercise the
+benchmark-frontier overlay this probe is meant to protect.
