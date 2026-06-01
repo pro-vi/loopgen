@@ -57,6 +57,9 @@ For each checklist item, do exactly one of:
   fixtures, snapshot refresh without semantic proof.
 - **Artifact locations** — where the queue, traces, and metrics live.
 - **Consult availability** — detect the `consult-capability` tier here.
+- **Benchmark-frontier overlay** — for frontier-shaped tasks, bind a concrete
+  benchmark/eval/harness object, evaluation unit, and durable evidence location,
+  or record a derivation gap if benchmark language appears without an object.
 - **Parameters / thresholds** — quiet-signal N, stuck-attempt N, cash-out N.
 - **Metered/irreversible resources** — any paid tier or quota the loop consumes
   repeatedly while unattended (paid-API $, cloud compute, rate-limited quota). If

@@ -33,6 +33,11 @@ criterion is still intended.
 Each row records, at minimum: source / provenance · confidence · what would
 prove it · status · reopen condition.
 
+For benchmark-frontier, candidate rows are stricter and live in the overlay
+artifact roles (`CANDIDATES`, `FRONTIER`, and `traces`) described in
+`references/benchmark-frontier-artifacts.md`. That stricter row contract is not
+inherited by pure frontier.
+
 ## When prompt-only is valid
 
 Only the simplest finite single-criterion runs ("I found one bug, close it")

@@ -5,6 +5,10 @@ Two related artifacts for the same decision:
 - **Tiers (T0–T6)** name the repository's *current measurement maturity*.
 - **Ramp stages (0–9)** name the *artifacts to build* to climb tiers.
 
+For benchmark-frontier candidate promotion, keep this generic maturity scale
+separate from `eval-ladder.md`. T0-T6 names repo measurement maturity; the eval
+ladder names whether a candidate may update the benchmark frontier.
+
 Use tiers to assess; use ramp stages to plan the climb.
 
 ## Tiers

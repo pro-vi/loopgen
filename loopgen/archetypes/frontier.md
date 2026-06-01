@@ -32,7 +32,8 @@ intervention; it is never picked from a menu.
 ## Failure modes
 
 - **Goodharting** — the primary metric rises while real capability rots.
-  Mitigation: Pareto-frontier metrics, a discriminative search set, a T6 holdout.
+  Mitigation: Pareto-frontier metrics, a discriminative search set, and a T6
+  anti-overfitting check.
 - **Oracle fetishism** — the loop keeps improving tooling without cashing out
   into product. Mitigation: cash-out discipline + the intervention-diversity
   axis catches same-shape runs.
@@ -51,6 +52,10 @@ intervention; it is never picked from a menu.
 ## Extras
 
 - Includes `primitives/evaluator-maturity.md` (T0–T6 tiers + ramp stages 0–9).
+- Includes `primitives/pressure-accounting.md` so checkpointing is always
+  explicit about pressure status, pressure debt, next pressure, and reason.
+- Applies `primitives/benchmark-frontier.md` only when frontload binds a
+  benchmark/eval/harness object. This is an overlay, not a fifth archetype.
 - Applies `references/review-closure-overlay.md` when the branch is in closure
   mode (architecture landed; work comes from reviewed findings / exact probes).
 - Carries the lessons of `references/same-family-drift.md` — the greedy

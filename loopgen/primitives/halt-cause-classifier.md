@@ -64,6 +64,11 @@ continues with that intervention. A non-terminal halt is valid only when every
 remaining useful intervention is blocked by the same external authority, would
 violate scope/budget, or is low-yield same-family polish with no fresh evidence.
 
+For frontier loops, the halt scan must also emit the pressure accounting fields:
+`pressure_status`, `pressure_debt`, `checkpoint_reason`, and `next_pressure`.
+Checkpointing with no pressure scan, open pressure, or no checkpoint reason is
+invalid; the runner reports the frontier as active or externally paused instead.
+
 The final output for a non-terminal halt must include a compact "halt scan"
 naming each searched axis/queue class and why no safe continuation remains.
 

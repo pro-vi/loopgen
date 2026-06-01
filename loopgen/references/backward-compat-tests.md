@@ -8,11 +8,12 @@ capability and the degradation contract.
 ## Acceptance criteria
 
 A composed prompt **passes** when its difference from the legacy reference is
-limited to exactly two classes:
+limited to exactly three classes:
 
 1. **the provenance preamble** (new, expected — the only addition for a pure
    case), and
-2. **cosmetic** whitespace / section-ordering.
+2. **frontier pressure accounting** (accepted only for pure frontier), and
+3. **cosmetic** whitespace / section-ordering.
 
 Any **load-bearing** structural difference on a pure case (a missing section, a
 changed rule, a weakened halt condition, a dropped invariant) is a **failure**
@@ -31,7 +32,11 @@ and blocks promotion until the design is revised.
   filled).
 - **Must contain:** the 5-axis homeostasis frame, signal hierarchy, same-family
   admissibility, frontier-anchor requirement, quiet-signal checkpoint,
-  evaluator-maturity tier.
+  evaluator-maturity tier, and pressure fields `pressure_status`,
+  `pressure_debt`, `checkpoint_reason`, `next_pressure`.
+- **Must not contain:** benchmark-frontier artifact roles such as `CANDIDATES`,
+  `DOMAIN_SPEC`, `FRONTIER`, candidate row fields, `eval_health`, candidate
+  operators, or holdout role fields.
 
 ### 2. Pure goal
 
@@ -110,6 +115,27 @@ and blocks promotion until the design is revised.
   incompatible primitives [target=finite-criteria, halt=manual-gated]` and
   fires AskUserQuestion. No prompt is emitted with a silent default.
 
+### 8. Benchmark-frontier overlay
+
+- **Task:** "Push the Weave quality benchmark overnight against braid-self,
+  empty-greenfield, sibling repo, and holdout repo cases."
+- **Expected bundle:** same weighted axes as pure frontier. Archetype
+  `frontier`, divergences `none`, `overlay: benchmark-frontier`.
+- **Must contain:** semantic artifact roles `DOMAIN_SPEC`, `BENCHMARK`,
+  `CANDIDATES`, `FRONTIER`, and `traces`; candidate lineage; evaluator health;
+  pressure debt; eval ladder; search/holdout/adversarial separation.
+- **Must not:** appear as a fifth archetype, change weighted-Hamming distance,
+  or make pure frontier emit the candidate artifact bundle.
+
+### 9. Weave premature checkpoint regression
+
+- **Task/result shape:** "16 traces green, 0 OPEN rows, no changed files, no
+  candidate/case/control expansion."
+- **Expected:** benchmark-frontier rejects checkpoint. It must expand a
+  candidate, case, control, metric, project category, evaluator dimension, or
+  artifact audit, or pause as `PAUSED_EXTERNAL` with
+  `pressure_debt: explicitly_deferred`.
+
 ## How to run
 
 The probe is an adversarial workflow: for each pure case, compose via the
@@ -118,3 +144,11 @@ Phase 1–3 procedure, diff the result against the legacy body
 provenance / cosmetic / load-bearing. Rows 1–4 must show no load-bearing
 difference; row 5 must contain the hybrid sections; row 6 must drop consult
 sections; row 7 must halt with an error.
+
+For the frontier two-tier split, run:
+
+```bash
+python3 tools/verify_loopgen_contracts.py
+python3 tools/verify_loopgen_contracts.py --print pure-frontier
+python3 tools/verify_loopgen_contracts.py --print benchmark-frontier
+```

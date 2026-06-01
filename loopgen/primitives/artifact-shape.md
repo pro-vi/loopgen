@@ -17,8 +17,8 @@ emits.
   source / confidence / proof / latest evidence.
 - `rubric+intent` — `loop/RUBRIC.md` (numbered criteria with 0/2/5 anchors) +
   `loop/INTENT.md` (≥3 live target hypotheses).
-- `findings-ledger` — a loop ledger + structured failure traces + benchmark /
-  metric outputs.
+- `findings-ledger` — a loop ledger + structured failure traces + metric
+  outputs.
 
 ## Detection heuristics
 
@@ -48,6 +48,10 @@ emits.
   STATE.md (`ACCEPTANCE.md` / `storyboard.*` / `RUBRIC.md`+`INTENT.md`); a
   findings-ledger is *suggested*, not silently invented, when the repo lacks a
   convention.
+- A pure frontier `findings-ledger` carries generic pressure accounting. The
+  benchmark-frontier overlay may additionally emit `DOMAIN_SPEC`, `BENCHMARK`,
+  `CANDIDATES`, `FRONTIER`, and `traces` roles, but those roles are conditional
+  overlay artifacts and do not change this axis value.
 - `acceptance-inventory` pairs with `target-shape: finite-criteria`.
 - A divergence on this axis (e.g. `storyboard` into a frontier body) swaps the
   queue section AND the extra emitted file; name it in provenance.

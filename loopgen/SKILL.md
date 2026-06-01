@@ -55,14 +55,18 @@ archetypes meaningfully differ on a new axis (the vocabulary-axis test).
 | `cadence-shape` | sync · checkpoint-gated · chapter · deferred-fire-and-forget | checkpoint-gated | sync | chapter | checkpoint-gated | 1 |
 
 Max weighted-Hamming distance is **12** (3+3+3+2+1). `consult-capability`
-(tier-0..3) is **environment-detected, not archetype-varying** — it is a
-composition *overlay* that changes which sections Phase 3 emits, and does
-**not** participate in classification distance. Its tiers are defined below.
+(tier-0..3) and `benchmark-frontier` are **environment/frontload-detected, not
+archetype-varying** — they are composition *overlays* that change which
+sections Phase 3 emits, and do **not** participate in classification distance.
+Consult tiers are defined below; benchmark-frontier is defined in
+`primitives/benchmark-frontier.md`.
 
 **Shared primitives** (constant across archetypes; in every composed prompt):
 `runner-contract`, `judgment-default`, `evidence-tier`, `frontload-audit`,
 `halt-cause-classifier`, `diagnostic-pattern`, `evaluator-maturity` (T0–T6),
 `queue-as-second-artifact`.
+`pressure-accounting` is shared by frontier prompts: it is a lightweight
+frontier checkpoint contract, not an archetype-varying axis.
 
 **Forbidden divergences** (identity-breaking; never compose — route away):
 
@@ -90,6 +94,11 @@ item: **resolve** (AskUserQuestion if the host has it, else print prominently),
 
 Always assess `consult-capability` here (the bodytxt-learned move): detect the
 tier and record it; it changes which sections Phase 3 emits.
+
+For frontier-shaped tasks, also assess `benchmark-frontier`: it activates only
+when frontload binds a concrete benchmark, evaluation, or harness object with an
+evaluation unit and evidence location. Benchmark/eval/harness language without
+a bound object is a derivation gap, not a silent generic frontier default.
 
 Record results under `loop/STATE.md` `frontload:` and produce the frontload
 preamble (resolved / defaulted / open gaps). Anything unresolved, undefaulted,
@@ -123,9 +132,10 @@ halt-cause classifier flags `derivation-gap` halts so the next pass closes it.
    them guards against.)
 
 Emit a structured classification: `{archetype, runnable, target-status,
-divergences[], consult-tier, evaluator-tier}`, where `target-status` is `defined`
-or `UNDEFINED → derivation-gap`, and `runnable` is `false` whenever a slot the
-loop needs to fire (dimension, stop rule, scope, evidence signal) is unbound. A
+divergences[], overlays[], consult-tier, evaluator-tier}`, where `target-status`
+is `defined` or `UNDEFINED → derivation-gap`, and `runnable` is `false` whenever
+a slot the loop needs to fire (dimension, stop rule, scope, evidence signal) is
+unbound. A
 clean archetype match — even an exact one — is a *candidate*, not a launchable
 loop: the *preintent* read is that "improve the codebase" classifies as `frontier`
 yet binds no dimension or stop rule, so it emits `{archetype: frontier, runnable:
@@ -143,7 +153,7 @@ section with an unsubstituted placeholder (warn if any survive), verify halt
 semantics, and emit.
 
 The provenance preamble MUST enumerate the archetype, every divergence + its
-source, the consult tier, and the frontload gaps. If a section says "the
+source, overlays, the consult tier, and the frontload gaps. If a section says "the
 archetype" without provenance naming the composing values, the composition is
 invisible — fix it.
 
@@ -168,8 +178,13 @@ nearest archetype's extra artifact(s):
 - `goal` → `loop/ACCEPTANCE.md` (frozen inventory)
 - `story` → `docs/storyboard.{md,yaml}`
 - `greenfield` → `loop/RUBRIC.md` + `loop/INTENT.md` (+ `loop/README.md`)
-- `frontier` → a findings ledger + trace/benchmark locations (suggest, don't
+- `frontier` → a findings ledger + trace/metric locations (suggest, don't
   silently invent, if the repo lacks a convention)
+
+For `frontier` with `overlay: benchmark-frontier`, emit or resolve the semantic
+artifact roles from `primitives/benchmark-frontier.md`: `DOMAIN_SPEC`,
+`BENCHMARK`, `CANDIDATES`, `FRONTIER`, and `traces`. These roles are conditional
+on the overlay and are not required for pure frontier.
 
 If the user invoked mid-conversation without asking to save, emit **chat-only**
 with an offer to write the files.
@@ -253,7 +268,8 @@ write a ⚠️ block to `loop/STATE.md`.
   `artifact-shape`, `convergence-shape`, `cadence-shape`, `consult-capability`)
   + shared blocks (`runner-contract`, `judgment-default`, `evidence-tier`,
   `frontload-audit`, `halt-cause-classifier`, `diagnostic-pattern`,
-  `evaluator-maturity`, `queue-as-second-artifact`).
+  `evaluator-maturity`, `queue-as-second-artifact`, `pressure-accounting`) and
+  the conditional `benchmark-frontier` / `eval-ladder` overlay.
 - `archetypes/` — `frontier`, `goal`, `story`, `greenfield`: irreducible loop
   shape + default primitive values + forbidden divergences + failure modes.
 - `templates/composed-prompt.md` — the assembly skeleton; `templates/bodies/`

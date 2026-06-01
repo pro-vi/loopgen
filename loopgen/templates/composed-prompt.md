@@ -45,8 +45,9 @@ logic that turns a body template into a composed prompt.
     (`primitives/halt-cause-classifier.md`, including the archetype's terminal
     cause).
 12. **Artifacts to maintain** — the archetype's queue (`artifact-shape`).
-13. **Overlays** — review-closure (`frontier` closure mode); Surface Taste Lane
-    (`story` taste lane).
+13. **Overlays** — benchmark-frontier (`frontier` only when frontload binds a
+    benchmark/eval/harness object); review-closure (`frontier` closure mode);
+    Surface Taste Lane (`story` taste lane).
 
 **The body template is authoritative for which sections appear.** This union
 list is the *superset* across archetypes; a section appears in a composed prompt
@@ -60,6 +61,7 @@ breaks the U11 backward-compat invariant.
 ```md
 > **Loop provenance — composed by `/loopgen`.**
 > Archetype: `<nearest>`  ·  Divergences: `<axis: value (source); …>` or `none`.
+> Overlays: `<benchmark-frontier; …>` or `none`.
 > Consult-capability: `tier-N` (`<channel, or "none — human-look gate substituted">`).
 > Evaluator tier: `<T0–T6, or n/a>`.
 > Frontload — resolved: [`…`]; defaulted: [`…`]; open gaps: [`…`].
@@ -95,10 +97,20 @@ is invisible — the preamble MUST enumerate every divergence axis + its source.
    - `tier-1` → replace programmatic consults with an async human-bridge handoff.
    - `tier-2`/`tier-3` → keep the consult sections (tier-3 enables blind
      adversarial multi-tool consults).
-7. **Strip dead sections.** Remove any section whose `{{placeholder}}` was not
+7. **Apply benchmark-frontier overlay** (`primitives/benchmark-frontier.md`):
+   - Only for nearest archetype `frontier`.
+   - Only when frontload resolved a concrete benchmark/eval/harness object,
+     evaluation unit, and durable evidence location.
+   - Replace `{{BENCHMARK_FRONTIER_MODE}}` with the "Benchmark Frontier Mode"
+     block from the primitive.
+   - Otherwise strip `{{BENCHMARK_FRONTIER_MODE}}` entirely. Pure frontier keeps
+     pressure accounting and does not inherit benchmark artifact roles.
+   - Record `overlay: benchmark-frontier` in provenance when active. The
+     weighted-Hamming distance table remains unchanged.
+8. **Strip dead sections.** Remove any section whose `{{placeholder}}` was not
    substituted. If any `{{…}}` survives, WARN in the emit summary — the emitted
    prompt must contain no dead sections.
-8. **Verify halt semantics.** The emitted prompt must distinguish invocation
+9. **Verify halt semantics.** The emitted prompt must distinguish invocation
    halt from archetype completion. Shared halt causes (`genuine-escalate`,
    `derivation-gap`, `signal-starvation`, `wrong-loop`) never mean the
    frontier, goal, story, or greenfield artifact is complete by themselves.
@@ -109,7 +121,7 @@ is invisible — the preamble MUST enumerate every divergence axis + its source.
    Also verify that any non-terminal shared halt requires a full search-surface
    scan first, so a single blocked row cannot stop the loop while another
    reversible in-scope intervention remains.
-9. **Emit** (see `SKILL.md` Phase 4): `loop/PROMPT.md` + `loop/STATE.md` + the
+10. **Emit** (see `SKILL.md` Phase 4): `loop/PROMPT.md` + `loop/STATE.md` + the
    archetype's extra artifact(s).
 
 ## Backward-compatibility invariant (U11 gate)
