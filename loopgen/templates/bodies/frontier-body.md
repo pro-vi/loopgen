@@ -181,9 +181,27 @@ to halt the frontier loop. If product work is blocked, look for evaluator,
 observability, specification, or intervention-diversity work that is reversible
 and in scope. If such work exists, continue with it.
 
+No-trigger is not no-pressure. If the current ledger has no OPEN findings and
+no changed files, the loop must perform one active pressure-discovery move
+before checkpointing. Examples: search for an untested project/category, audit a
+recent trace against the frontier vector, add or run a holdout, construct a new
+expected-red control for a suspected blind spot, compare performance/cost trend,
+or improve the evaluator's ability to expose the next weakness. If discovery
+finds pressure, set the frontier active and continue. If discovery is blocked by
+budget or external authority, halt as `PAUSED_EXTERNAL`, not checkpoint.
+
+Homeostasis is not the end of the frontier loop; it is the signal to return to
+the ramp shape at a wider radius. When known axes are balanced, the next useful
+move is usually an expansion ramp: add a new project category, new holdout, new
+adversarial control, new evaluator dimension, or new representation/performance
+measurement before resuming product improvement. Treat the initial ramp as the
+first instance of this recurring pattern, not a one-time preface.
+
 The halt is valid only when every remaining useful intervention is either
 blocked by the same external authority, outside scope, or low-yield same-family
-polish with no fresh evidence. Include the scan in the final response:
+polish with no fresh evidence, the active pressure-discovery move found no new
+admissible pressure, and no expansion-ramp candidate exists inside scope/budget.
+Include the scan in the final response:
 
 ```text
 halt scan:
@@ -192,6 +210,8 @@ halt scan:
 - failure legibility: <balanced/drifting/blocked> - <why no safe move>
 - specification coherence: <balanced/drifting/blocked> - <why no safe move>
 - intervention diversity: <balanced/drifting/blocked> - <why no safe move>
+pressure discovery: <what was searched/evaluated> - <pressure found or why none>
+expansion ramp: <new radius considered> - <ramp started or why none>
 ```
 
 ### Intervention labels (reference glossary)

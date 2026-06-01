@@ -3,6 +3,7 @@
 # local / ephemeral — not part of the skill
 .inbox/
 .research/
+.launch/
 dev/
 **/logs/
 
