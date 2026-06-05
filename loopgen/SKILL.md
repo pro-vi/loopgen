@@ -111,6 +111,13 @@ relevant set of files and records that list in `loop/STATE.md`
 - `primitives/evidence-tier.md`
 - `primitives/halt-cause-classifier.md`
 - `primitives/queue-as-second-artifact.md`
+- `primitives/pressure.md`
+
+`primitives/pressure.md` is read every run because the frontload latent-pressure
+mining step is universal and needs its modes + object schema. It shapes the
+emitted prompt (and appears in the provenance `Primitive sources:` line) only
+when mining or a seed produces ≥1 pressure object, so a zero-pressure pure case
+stays byte-identical even though the file is in the read set.
 
 **After classification, also read:**
 
