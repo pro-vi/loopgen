@@ -67,8 +67,12 @@ when the gate holds; else stripped. The active rows themselves live in
 
 Before you select a queue row or score a criterion this iteration, re-read
 `loop/PRESSURE.md`. It holds the active pressure field — the weather the
-acceptance criteria get read in. Let each active row tilt the plan **while you
-are still planning, before any gate**:
+acceptance criteria get read in. `loop/PRESSURE.md` is the rendered view of
+`loop/STATE.md` `pressure_objects` (the source of truth), not a separate store:
+where a frontier checkpoint contract says to keep pressure in the findings
+ledger / `loop/STATE.md` and not invent a new artifact, this is that same store
+rendered — the two agree. Let each active row tilt the plan **while you are
+still planning, before any gate**:
 
 - `salience` — keep it in attention; name it in the plan.
 - `preference` — favor the move it points to unless you have a reason not to.
