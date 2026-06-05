@@ -67,9 +67,11 @@ Consult tiers are defined below; benchmark-frontier is defined in
 **Shared primitives** (constant across archetypes; in every composed prompt):
 `runner-contract`, `judgment-default`, `evidence-tier`, `frontload-audit`,
 `halt-cause-classifier`, `diagnostic-pattern`, `evaluator-maturity` (T0–T6),
-`queue-as-second-artifact`.
-`pressure-accounting` is shared by frontier prompts: it is a lightweight
-frontier checkpoint contract, not an archetype-varying axis.
+`queue-as-second-artifact`, `pressure`.
+`pressure` is universal, but its `{{PRESSURE_SURFACE}}` block emits only when ≥1
+pressure object exists at compose time (gated; byte-identical when empty).
+`pressure-accounting` is the `frontier` projection of `pressure`, not a separate
+archetype-varying axis.
 
 **Forbidden divergences** (identity-breaking; never compose — route away):
 
@@ -227,6 +229,8 @@ the canonical files.
 
 - `loop/PROMPT.md` — the complete re-entrant iteration prompt.
 - `loop/STATE.md` — the durable resume state.
+- `loop/PRESSURE.md` — the active pressure field, re-read each iteration to
+  shape how criteria are interpreted; seeded empty until a pressure exists.
 
 **Archetype files:**
 
@@ -251,6 +255,7 @@ directories, performance reports, benchmark outputs, or generated artifacts.
 - `artifacts: {canonical, repo_aliases}`
 - `iteration`, `phase`, `current_artifact`, `last_action`, `next_action`
 - `halt_cause`, `halt_scan`
+- `pressure_objects`, `pressure_ledger`
 
 **Archetype-specific `loop/STATE.md` keys:**
 
@@ -265,6 +270,10 @@ directories, performance reports, benchmark outputs, or generated artifacts.
 - `greenfield` — `score_lock`, `phase_gates`, `rubric_version`,
   `score_comparable_with`, `target_hypotheses`, `current_stone_axis`,
   `capability_list`, `user_halt_owner`.
+
+`frontier`'s `pressure_status` / `pressure_debt` / `checkpoint_reason` /
+`next_pressure` are the frontier projection of the common `pressure_objects` /
+`pressure_ledger` — the same field, rendered as a checkpoint contract.
 
 **Hybrid merge rule.** A hybrid is a union over **active contracts**, not a
 blind union over all contributing archetypes:

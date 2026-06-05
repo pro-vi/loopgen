@@ -6,6 +6,13 @@ Frontier loops do not finish; they account for pressure. This primitive gives
 generic frontier prompts a small checkpoint contract without requiring a
 benchmark artifact system.
 
+It is the **`frontier` projection of the universal `pressure` primitive**
+(`primitives/pressure.md`): the pressure field rendered as a checkpoint
+contract. The fields below (`pressure_status`, `pressure_debt`,
+`checkpoint_reason`, `next_pressure`) are the frontier view of the common
+`pressure_objects` / `pressure_ledger`. The inlined block (below the `---`) is
+unchanged, so frontier's emitted bytes stay byte-identical.
+
 ## Include when
 
 Every prompt whose nearest archetype is `frontier`. It is universal for
