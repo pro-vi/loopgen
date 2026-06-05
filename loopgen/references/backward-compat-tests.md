@@ -255,9 +255,9 @@ stripped, the frontier pressure-accounting inlined block unchanged); row 11 must
 emit the weather block (re-read contract + mode law + backpressure) when ≥1
 pressure object is seeded or mined, with the classification distance unchanged.
 Row 12 is a behavioral trace, not a byte-diff: drive a seeded-pressure loop over
-N iterations and assert none of the four runtime-safety invariants (OPEN-gate
-deprioritization, false-negative backpressure wall, unevidenced `paid`, unbounded
-ledger) is violated.
+N iterations and assert none of the five runtime-safety invariants (OPEN-gate
+deprioritization, false-negative backpressure wall, unevidenced `paid`, premature
+`stale` / retire, unbounded ledger) is violated.
 
 All twelve rows are required; a gate run that stops at row 7 does not exercise
 the benchmark-frontier overlay this probe is meant to protect. Rows 1–11 are
