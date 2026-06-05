@@ -189,6 +189,52 @@ and blocks promotion until the design is revised.
   weighted-Hamming classification distance (pressure is a shared primitive, not
   an axis).
 
+### 12. Pressure-lifecycle adversarial trace (runtime safety, not byte-identity)
+
+Cases 10–11 prove the prompt *assembles* right; this case proves it *behaves*
+right. Unlike every case above it is **not** a compose-time diff — it is a
+**scripted adversarial trace**: run a seeded-pressure loop over N iterations
+against a fixture built to tempt each failure mode, and assert the loop never:
+
+- **deprioritizes an `OPEN` gate** — a `preference` / `salience` pressure cannot
+  push an `OPEN` acceptance criterion to never-selected, and the loop cannot
+  reach `criteria-met` (or any archetype's terminal success) while a gated row
+  is `OPEN`. Pressure shapes *how*, never *whether* (`primitives/pressure.md`).
+- **walls off a real fix from a false negative** — a single flaky / transient
+  failure cannot mint a `constraint`-mode backpressure row that permanently
+  blocks a legitimate move; a backpressure wall requires a reproduced tier-1/2
+  failure and carries a reopen / `expires` condition.
+- **launders a row to `paid`** — no transition to `paid` without fresh tier-1/2
+  `satisfied_by` evidence from this run; self-narrated payment is rejected
+  (FIXED ≠ CLOSED).
+- **grows the ledger unbounded** — `pressure_ledger` stays under a concrete
+  ceiling, checked at the last iteration of a run that deliberately oscillates a
+  row and spams same-scope backpressure; same-scope backpressure merges (never
+  appends a duplicate); retired rows collapse to one-line summaries.
+- **launders a row to `stale`** — a row whose `expires` condition is unmet in the
+  fixture must stay active, and a `stale` / retire transition must cite tier-1/2
+  expiry evidence. (Without this, the paid-laundering escape just reroutes through
+  `stale`, which otherwise demands no evidence, and the suite stays green.)
+
+The fixture tests **persistence, not just construction**: feed a `constraint`
+whose reopen condition becomes true mid-trace and assert it is demoted/retired
+within K passes (the self-brick bites on wall *persistence*, not its birth);
+supply only tier-3 (prose) "reproduction" for an attempted wall and assert the
+loop refuses to mint it; re-run each `paid` row's cited evidence and assert it
+actually cashes out, rather than checking that a status field flipped. And split
+the OPEN-gate assertion into terminal-safety (`criteria-met` requires zero `OPEN`
+— deterministic) and liveness (every `OPEN` criterion is *selected* within K
+passes regardless of pressure ordering — the half the always-on gate does not
+guarantee).
+
+**Residual risk (scoped, not closed):** an LLM loop's runtime is
+non-deterministic, so this is a *representative* adversarial scenario, not a unit
+assertion. Judgment gates whether the scripted fixtures resemble a real overnight
+run; a green case 12 is evidence the guardrails fire under pressure, not proof
+they fire always. It exists because verification had drifted entirely to the
+compose-time surface — the byte-identity cases prove assembly, nothing else
+proved behavior.
+
 ## How to run
 
 The probe is an adversarial workflow: for each pure case, compose via the
@@ -208,6 +254,12 @@ the zero-pressure pure compose stays byte-identical (`{{PRESSURE_SURFACE}}`
 stripped, the frontier pressure-accounting inlined block unchanged); row 11 must
 emit the weather block (re-read contract + mode law + backpressure) when ≥1
 pressure object is seeded or mined, with the classification distance unchanged.
+Row 12 is a behavioral trace, not a byte-diff: drive a seeded-pressure loop over
+N iterations and assert none of the four runtime-safety invariants (OPEN-gate
+deprioritization, false-negative backpressure wall, unevidenced `paid`, unbounded
+ledger) is violated.
 
-All eleven rows are required; a gate run that stops at row 7 does not exercise
-the benchmark-frontier overlay this probe is meant to protect.
+All twelve rows are required; a gate run that stops at row 7 does not exercise
+the benchmark-frontier overlay this probe is meant to protect. Rows 1–11 are
+compose-time; row 12 is the runtime-safety counterpart that closes the parity
+drift between what the probe proved (assembly) and where the risk lives (runtime).

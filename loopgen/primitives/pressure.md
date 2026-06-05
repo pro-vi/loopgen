@@ -65,9 +65,11 @@ when the gate holds; else stripped. The active rows themselves live in
 
 ## Pressure weather
 
-Before you select a queue row or score a criterion this iteration, re-read
-`loop/PRESSURE.md`. It holds the active pressure field — the weather the
-acceptance criteria get read in. `loop/PRESSURE.md` is the rendered view of
+This is iteration **step 0**: before any numbered step of the protocol below,
+re-read `loop/PRESSURE.md` and run its maintenance pass (below). It holds the
+active pressure field — the weather the acceptance criteria get read in — and
+its header carries these maintenance rules, so the discipline survives context
+compaction even when this block is summarized away. `loop/PRESSURE.md` is the rendered view of
 `loop/STATE.md` `pressure_objects` (the source of truth), not a separate store:
 where a frontier checkpoint contract says to keep pressure in the findings
 ledger / `loop/STATE.md` and not invent a new artifact, this is that same store
@@ -85,24 +87,61 @@ When modes conflict on one scope, the stronger wins (`constraint` > `burden` >
 point at where it bent a plan; a row whose `satisfied_by` cannot cite tier-1/2
 evidence (`evidence-tier.md`) is cut, not rendered.
 
+**Maintain walls or they fall.** Each pass, re-test every active `constraint`
+row against its reopen / `expires` condition before treating it as a wall. A
+`constraint` you did not re-test this pass is read as a `burden` (a slope), not a
+wall — a neglected wall un-bricks, it never bricks the loop. This fail-open
+default is the guard against self-bricking on a stale or false-negative wall: the
+loop self-polices these rules, so the only safe default is the one where neglect
+errs toward the slope, never toward the locked door.
+
+Pressure shapes **how** a move is chosen, never **whether** a gate is met. No
+mode — not even `constraint` — can deprioritize an `OPEN` acceptance criterion,
+suppress a required verify, or let an archetype halt with its terminal contract
+unmet. The archetype gate (goal's binary oracle, frontier's pressure checkpoint,
+story's ready-gate, greenfield's phase gates) outranks every pressure: pressure
+may reorder how you approach the work; it may never erase the work.
+
 ## Backpressure
 
 When an attempt resolves against the world — a failed verify, eval, probe, or
 review — capture the result as pressure for the next pass: append a
 `source: backpressure` object to `loop/STATE.md` `pressure_objects` (it renders
-into `loop/PRESSURE.md`), scoped to what failed, in the mode the failure implies
-(a failed safety check is a `burden`; a corrupted oracle is a `constraint`), and
-record its creation in `pressure_ledger`. This is how late consequence becomes
-early pressure:
+into `loop/PRESSURE.md`), scoped to what failed, in the **softest** mode the
+failure justifies — default `burden`, never `constraint` from a single signal. A
+backpressure `constraint` (a wall) requires the failure reproduced on a tier-1/2
+channel, and even then carries an `expires`/reopen condition: a wall built from
+one flaky or transient failure would permanently brick a legitimate fix, and the
+loop would self-brick. Record its creation in `pressure_ledger`. This is how late
+consequence becomes early pressure:
 the next iteration starts already bent away from the failure instead of
 re-discovering it. The loop improves not because the model got smarter but
 because failure stops being wasted.
 
 ## Lifecycle
 
-Each pass, retire what no longer earns its place. A `paid` pressure (its
-consequence cashed out) drops from the weather; a `stale` pressure (past
-`expires`, or its cause gone) retires; a soft pressure that kept costing the
-same move may `harden` into a `constraint`. Record every transition in
-`loop/STATE.md` `pressure_ledger`. Pressure without a lifecycle is bureaucracy
-with better branding.
+Each pass, retire what no longer earns its place — but a transition is a claim
+that owes evidence, exactly like a queue row:
+
+- → `paid` **only** when `satisfied_by` cites fresh tier-1/2 evidence produced
+  this run (`evidence-tier.md`). A row may never be flipped to `paid` on the
+  loop's own say-so — self-narrated payment is FIXED≠CLOSED laundering that lets
+  the loop escape an unmet pressure.
+- → `stale` / retired carries the **same** evidence burden as `paid`: cite the
+  tier-1/2 signal that proves `expires` met or the cause externally gone — never
+  the loop's own say-so. (Retiring is the easiest launder-and-shred exit — drop
+  an inconvenient row to `stale`, then collapse it. The required evidence cite,
+  kept in the ledger summary, is what blocks it; without it the paid-laundering
+  escape just reroutes through `stale`.)
+- → `hardened` (soft → `constraint`) only when the same soft pressure kept
+  costing the same move across iterations, recorded with that evidence.
+
+Record every transition in `loop/STATE.md` `pressure_ledger`, each with its
+evidence cite. Bound **both** sets, not just retired rows: a new `source:
+backpressure` row scoped to an already-pressured scope **merges into** the
+existing row (strengthen / re-stamp), never appends a duplicate; more than a
+small N of active rows, or a row thrashing `active`↔`burden` without ever
+retiring, is itself a `checkpoint_reason` / derivation-gap, not silent growth;
+once a row is `retired`, collapse its history to a one-line summary (id, final
+status, evidence). Pressure without a lifecycle is bureaucracy with better
+branding; a lifecycle without evidence is the same laundering wearing a clock.
