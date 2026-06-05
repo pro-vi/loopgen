@@ -146,9 +146,10 @@ evidence cite. Bound **both** sets, not just retired rows: a new `source:
 backpressure` row scoped to an already-pressured scope **merges into** the
 existing row (strengthen / re-stamp), never appends a duplicate; more than
 `pressure-cap` active rows (concrete default 12, frontload-tunable alongside
-stuck-attempt-N / quiet-signal-N when pressure is active), or a row thrashing
-`active`↔`burden` without ever retiring, is itself a `checkpoint_reason` /
-derivation-gap, not silent growth. The `pressure_ledger` itself is capped, not
+stuck-attempt-N / quiet-signal-N when pressure is active), or a row that keeps
+oscillating its mode (`constraint` ↔ `burden`) or re-stamping without ever
+reaching a terminal status (`paid` / `stale` / `retired`), is itself a
+`checkpoint_reason` / derivation-gap, not silent growth. The `pressure_ledger` itself is capped, not
 just the active set: keep at most the last `K` transitions per row (default
 `K = 5`) — older in-flight transitions on a non-retired row collapse to a count +
 last state, so an oscillating or repeatedly re-stamped row cannot grow the ledger
