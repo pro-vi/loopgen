@@ -29,6 +29,8 @@ Your job is to make a finite acceptance inventory pass without weakening it.
 
 {{FRONTLOAD_PREAMBLE}}
 
+{{PRESSURE_SURFACE}}
+
 ## Oracle principles
 
 This loop is honest by construction (full text in
@@ -307,6 +309,8 @@ Placeholders populated during derivation (see SKILL.md):
 - `{{PROVENANCE}}` — the loopgen provenance preamble.
 - `{{MOTIVE}}` — one-sentence terminal goal.
 - `{{FRONTLOAD_PREAMBLE}}` — resolved / defaulted / open-gap summary.
+- `{{PRESSURE_SURFACE}}` — the pressure weather block (`primitives/pressure.md`),
+  emitted only when ≥1 pressure object exists at compose time; stripped otherwise.
 - `{{GOAL_VERSION}}` — fingerprint of criteria + provenance + authority +
   final-verify.
 - `{{REGRESSION_MODE}}` — omit unless this is a rerun (then: "Regression

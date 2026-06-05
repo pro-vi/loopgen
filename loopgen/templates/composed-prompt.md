@@ -24,6 +24,10 @@ patch/degrade/strip logic that turns a body template into a composed prompt.
    `greenfield` it is carried by invariant 7 instead, so it is not emitted twice.
 6. **Frontload preamble** — ALWAYS via `{{FRONTLOAD_PREAMBLE}}`
    (`primitives/frontload-audit.md` output).
+6a. **Pressure surface** — CONDITIONAL via `{{PRESSURE_SURFACE}}`
+   (`primitives/pressure.md`). Emitted right after the frontload preamble — the
+   weather is read before the body — but **only when ≥1 pressure object exists**
+   at compose time; otherwise stripped, leaving the prompt byte-identical.
 7. **Archetype body** — the nearest archetype's body, placeholders filled.
    Conditional sub-sections by archetype:
    - `frontier`: Frontier vector · Core law · Homeostasis (5 axes) · Evaluator
@@ -121,6 +125,17 @@ is invisible — the preamble MUST enumerate every divergence axis + its source.
      pressure accounting and does not inherit benchmark artifact roles.
    - Record `overlay: benchmark-frontier` in provenance when active. The
      weighted-Hamming distance table remains unchanged.
+7a. **Apply pressure surface** (`primitives/pressure.md`):
+   - If `count(pressure_objects) ≥ 1` at compose (the frontload latent-pressure
+     mining step or a human seed produced ≥1 row), replace `{{PRESSURE_SURFACE}}`
+     with the block below the `---` in `primitives/pressure.md`, resolving any
+     include markers it carries.
+   - Otherwise strip `{{PRESSURE_SURFACE}}` entirely (step 8 removes it). A pure
+     archetype with no seeded or mined pressure stays byte-identical — gated
+     exactly like `{{BENCHMARK_FRONTIER_MODE}}`.
+   - The active rows live in `loop/PRESSURE.md` (re-read each pass), not inlined
+     into the prompt; the emitted block carries the re-read contract, the mode
+     law, and the backpressure instruction.
 8. **Strip dead sections.** Remove any section whose `{{placeholder}}` was not
    substituted. If any `{{…}}` survives, WARN in the emit summary — the emitted
    prompt must contain no dead sections.
@@ -149,3 +164,8 @@ provenance preamble, (b) the frontload preamble, (c) canonical artifact/state
 contract references, (d) the shared pressure-accounting block for pure frontier
 only, and (e) cosmetic whitespace/ordering. Any other load-bearing structural
 difference on a pure case fails the probe.
+
+The `{{PRESSURE_SURFACE}}` block is gated on ≥1 compose-time pressure object: a
+pure case with no seeded or mined pressure has it stripped, so it is **absent**
+(not a delta) and byte-identity holds. A case that intentionally seeds pressure
+is not a pure case and is tested separately.

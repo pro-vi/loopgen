@@ -28,6 +28,8 @@ make it real — without grading your own homework.
 
 {{FRONTLOAD_PREAMBLE}}
 
+{{PRESSURE_SURFACE}}
+
 ## Green-field invariants
 
 These eleven invariants are load-bearing; each corresponds to a failure mode a
@@ -94,6 +96,8 @@ Placeholders populated during composition (see `templates/composed-prompt.md`):
 - `{{PROVENANCE}}` — the loopgen provenance preamble.
 - `{{MOTIVE}}` — the user's one-sentence intent ("build me something X-adjacent").
 - `{{FRONTLOAD_PREAMBLE}}` — resolved / defaulted / open-gap summary.
+- `{{PRESSURE_SURFACE}}` — the pressure weather block (`primitives/pressure.md`),
+  emitted only when ≥1 pressure object exists at compose time; stripped otherwise.
 - `{{INVARIANTS}}` — inline the 11 invariants verbatim from
   `references/greenfield-invariants.md`.
 - `{{CAPABILITY_LIST}}` — domain-specific tools the loop may install (invariant 6).

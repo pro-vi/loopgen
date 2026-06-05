@@ -26,6 +26,8 @@ Your job is to improve the repository's evidence-backed frontier.
 
 {{FRONTLOAD_PREAMBLE}}
 
+{{PRESSURE_SURFACE}}
+
 ## Frontier vector
 
 This repository's evidence-backed frontier moves along these dimensions:
@@ -480,6 +482,8 @@ Placeholders populated during derivation (see SKILL.md step 6):
 - `{{PROVENANCE}}` — the loopgen provenance preamble.
 - `{{MOTIVE}}` — one-sentence goal from user.
 - `{{FRONTLOAD_PREAMBLE}}` — resolved / defaulted / open-gap summary.
+- `{{PRESSURE_SURFACE}}` — the pressure weather block (`primitives/pressure.md`),
+  emitted only when ≥1 pressure object exists at compose time; stripped otherwise.
 - `{{EVALUATOR_TIER}}` — current T0–T6 tier.
 - `{{RAMP_GUIDANCE}}` — one line. Omit if at or above T3.
 - `{{CHEAP_CHANNEL}}` / `{{EXPENSIVE_CHANNEL}}` — named commands or

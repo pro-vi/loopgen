@@ -33,6 +33,8 @@ project-management digest.
 
 {{FRONTLOAD_PREAMBLE}}
 
+{{PRESSURE_SURFACE}}
+
 ## Core objects
 
 ### Guidance Source
@@ -715,6 +717,8 @@ Placeholders populated during derivation (see SKILL.md):
 - `{{MOTIVE}}` — one-sentence goal from the user (e.g., "verify the
   evidence-anchor workflow for the compliance officer persona").
 - `{{FRONTLOAD_PREAMBLE}}` — resolved / defaulted / open-gap summary.
+- `{{PRESSURE_SURFACE}}` — the pressure weather block (`primitives/pressure.md`),
+  emitted only when ≥1 pressure object exists at compose time; stripped otherwise.
 - `{{LANE}}` — selected lane. Common values: `Surface Taste Lane` (visual
   / product / frontend quality), or a domain-specific lane named by the
   repo. If absent from the user prompt, infer from the strongest guidance
