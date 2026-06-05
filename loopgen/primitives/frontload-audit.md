@@ -57,6 +57,15 @@ For each checklist item, do exactly one of:
   fixtures, snapshot refresh without semantic proof.
 - **Artifact locations** — where the queue, traces, and metrics live.
 - **Consult availability** — detect the `consult-capability` tier here.
+- **Latent-pressure mining** — before composing, ask "what does this system
+  already care about?" — shared route wrappers, golden tests, a design system
+  that punishes one-off components, schema changes that arrive with migration
+  notes. Surface these as `source: mined` pressure objects
+  (`primitives/pressure.md`) so the loop is bent by them before it acts.
+  **Value is not mineable** (delight vs boring, speed vs polish, which
+  abstractions to shed) — value is human-seeded `source: authored`. A repo with
+  no such conventions mines nothing, and the pressure surface stays empty
+  (byte-identical).
 - **Benchmark-frontier overlay** — for frontier-shaped tasks, bind a concrete
   benchmark/eval/harness object, evaluation unit, and durable evidence location,
   or record a derivation gap if benchmark language appears without an object.
