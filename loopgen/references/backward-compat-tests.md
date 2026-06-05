@@ -19,6 +19,11 @@ limited to these accepted classes:
    `derivation_read_set`, canonical file names, repo aliases), and
 5. **cosmetic** whitespace / section-ordering.
 
+The `{{PRESSURE_SURFACE}}` weather block is **gated on ≥1 compose-time pressure
+object**. A pure case seeds and mines no pressure, so the block is stripped and
+absent — it adds no accepted-delta class (see case 10). A case that intentionally
+seeds pressure is, by definition, not a pure case (see case 11).
+
 Any **load-bearing** structural difference on a pure case (a missing section, a
 changed rule, a weakened halt condition, a dropped invariant) is a **failure**
 and blocks promotion until the design is revised.
@@ -147,6 +152,43 @@ and blocks promotion until the design is revised.
   artifact audit, or pause as `PAUSED_EXTERNAL` with
   `pressure_debt: explicitly_deferred`.
 
+### 10. Zero-pressure byte-identity (every pure archetype)
+
+- **Task:** each of cases 1–4, composed with no human-seeded pressure against a
+  repo with no minable conventions (`pressure_objects: []`).
+- **Expected:** `{{PRESSURE_SURFACE}}` is left unsubstituted and stripped (Phase 3
+  step 8), so the composed `loop/PROMPT.md` is byte-identical to that pure case's
+  legacy reference modulo the already-accepted deltas. `loop/STATE.md` carries
+  `pressure_objects: []` and `pressure_ledger: []` (accepted as canonical
+  state-contract references); `loop/PRESSURE.md` exists seeded empty, like
+  `loop/VERIFY.md`.
+- **Must contain:** nothing new — no pressure weather block, no re-read contract,
+  no backpressure instruction.
+- **Frontier sub-assertion:** the inlined `primitives/pressure-accounting.md`
+  block (below its `---`) is unchanged; pure frontier's `pressure_status`,
+  `pressure_debt`, `checkpoint_reason`, `next_pressure` render exactly as before.
+- This is the gate the pressure-native change rests on: if any pure case gains a
+  load-bearing pressure section with zero pressure seeded, the change fails.
+
+### 11. Pressure surface active (positive)
+
+- **Task:** any pure case above, run where frontload mining surfaces ≥1 latent
+  pressure (a repo with golden tests + a shared route wrapper) or the user seeds
+  one (`source: authored`).
+- **Expected:** `{{PRESSURE_SURFACE}}` is substituted from `primitives/pressure.md`
+  immediately after the frontload preamble. The block carries the re-read
+  contract (re-read `loop/PRESSURE.md` each pass before selecting / scoring), the
+  mode law (`salience` / `preference` / `burden` / `constraint`, priority
+  `constraint > burden > preference > salience`), and the backpressure
+  instruction (on a failed verify / eval / probe, append a `source: backpressure`
+  row). `loop/PRESSURE.md` holds the active rows; `pressure_ledger` records
+  lifecycle transitions.
+- **Not a pure case:** because pressure is seeded or mined, this sits outside the
+  byte-identity set; it exercises the new capability.
+- **Must not:** appear when zero pressure exists (that is case 10), nor change the
+  weighted-Hamming classification distance (pressure is a shared primitive, not
+  an axis).
+
 ## How to run
 
 The probe is an adversarial workflow: for each pure case, compose via the
@@ -161,7 +203,11 @@ sections and additive artifact contract; row 6 must drop consult sections; row
 classification distance unchanged and the pure-frontier render free of the
 candidate bundle); row 9 must reject the green-trace / zero-OPEN / no-expansion
 shape as a checkpoint (expand a candidate/case/control, or halt
-`PAUSED_EXTERNAL` with `pressure_debt: explicitly_deferred`).
+`PAUSED_EXTERNAL` with `pressure_debt: explicitly_deferred`). Row 10 must show
+the zero-pressure pure compose stays byte-identical (`{{PRESSURE_SURFACE}}`
+stripped, the frontier pressure-accounting inlined block unchanged); row 11 must
+emit the weather block (re-read contract + mode law + backpressure) when ≥1
+pressure object is seeded or mined, with the classification distance unchanged.
 
-All nine rows are required; a gate run that stops at row 7 does not exercise the
-benchmark-frontier overlay this probe is meant to protect.
+All eleven rows are required; a gate run that stops at row 7 does not exercise
+the benchmark-frontier overlay this probe is meant to protect.
