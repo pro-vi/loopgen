@@ -87,8 +87,9 @@ When modes conflict on one scope, the stronger wins (`constraint` > `burden` >
 point at where it bent a plan; a row whose `satisfied_by` cannot cite tier-1/2
 evidence (`evidence-tier.md`) is cut, not rendered.
 
-**Maintain walls or they fall.** Each pass, re-test every active `constraint`
-row against its reopen / `expires` condition before treating it as a wall. A
+**Maintain walls or they fall.** Each pass, re-test every enforced `constraint`
+row — `status: active` **or** `hardened`, the two states still in force —
+against its reopen / `expires` condition before treating it as a wall. A
 `constraint` you did not re-test this pass is read as a `burden` (a slope), not a
 wall — a neglected wall un-bricks, it never bricks the loop. This fail-open
 default is the guard against self-bricking on a stale or false-negative wall: the
@@ -134,14 +135,20 @@ that owes evidence, exactly like a queue row:
   kept in the ledger summary, is what blocks it; without it the paid-laundering
   escape just reroutes through `stale`.)
 - → `hardened` (soft → `constraint`) only when the same soft pressure kept
-  costing the same move across iterations, recorded with that evidence.
+  costing the same move across iterations, recorded with that evidence. A
+  `hardened` row is still **in force**: it stays in the wall-maintenance set
+  above and is re-tested every pass exactly like an `active` `constraint` — it is
+  not a terminal state, so it can still be demoted or retired when its reopen
+  condition is met.
 
 Record every transition in `loop/STATE.md` `pressure_ledger`, each with its
 evidence cite. Bound **both** sets, not just retired rows: a new `source:
 backpressure` row scoped to an already-pressured scope **merges into** the
-existing row (strengthen / re-stamp), never appends a duplicate; more than a
-small N of active rows, or a row thrashing `active`↔`burden` without ever
-retiring, is itself a `checkpoint_reason` / derivation-gap, not silent growth;
+existing row (strengthen / re-stamp), never appends a duplicate; more than
+`pressure-cap` active rows (concrete default 12, frontload-tunable alongside
+stuck-attempt-N / quiet-signal-N when pressure is active), or a row thrashing
+`active`↔`burden` without ever retiring, is itself a `checkpoint_reason` /
+derivation-gap, not silent growth;
 once a row is `retired`, collapse its history to a one-line summary (id, final
 status, evidence). Pressure without a lifecycle is bureaucracy with better
 branding; a lifecycle without evidence is the same laundering wearing a clock.
