@@ -236,8 +236,14 @@ the canonical files.
 
 - `loop/PROMPT.md` — the complete re-entrant iteration prompt.
 - `loop/STATE.md` — the durable resume state.
-- `loop/PRESSURE.md` — the active pressure field, re-read each iteration to
-  shape how criteria are interpreted; seeded empty until a pressure exists.
+- `loop/PRESSURE.md` — the active pressure field, rendered from `loop/STATE.md`
+  `pressure_objects` (the source of truth) and re-read each iteration to shape
+  how criteria are interpreted; seeded empty until a pressure exists. It is the
+  canonical pressure surface for `goal` / `story` / `greenfield`. `frontier`
+  already renders its pressure through the findings ledger + `pressure_status`
+  (the projection, `primitives/pressure-accounting.md`), so for `frontier`
+  `loop/PRESSURE.md` aliases that surface rather than inventing a second one —
+  consistent with the frontier Storage rule (findings ledger / `loop/STATE.md`).
 
 **Archetype files:**
 

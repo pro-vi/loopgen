@@ -85,9 +85,11 @@ evidence (`evidence-tier.md`) is cut, not rendered.
 
 When an attempt resolves against the world — a failed verify, eval, probe, or
 review — capture the result as pressure for the next pass: append a
-`source: backpressure` row to `loop/PRESSURE.md`, scoped to what failed, in the
-mode the failure implies (a failed safety check is a `burden`; a corrupted
-oracle is a `constraint`). This is how late consequence becomes early pressure:
+`source: backpressure` object to `loop/STATE.md` `pressure_objects` (it renders
+into `loop/PRESSURE.md`), scoped to what failed, in the mode the failure implies
+(a failed safety check is a `burden`; a corrupted oracle is a `constraint`), and
+record its creation in `pressure_ledger`. This is how late consequence becomes
+early pressure:
 the next iteration starts already bent away from the failure instead of
 re-discovering it. The loop improves not because the model got smarter but
 because failure stops being wasted.
