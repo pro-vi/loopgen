@@ -2,6 +2,8 @@
 
 <p align="center"><strong>Prompt Compiler for creating long-running autonomous loops.</strong></p>
 
+<p align="center"><em>It writes the weather, not just the target — a re-readable pressure field that makes the wrong worlds harder to reach while the loop runs.</em></p>
+
 Your loop died 10 minutes after you went to sleep.
 
 Not because the task was impossible. It blocked on a decision you could have made before it ever fired, or it declared victory on the first green-looking signal.
