@@ -32,6 +32,10 @@ artifacts:
   holdout_trace: path | null
   adversarial_trace: path | null
   meta_eval_trace: path | null
+  oracle_check_trace: path | null      # F1: independent re-derivation of the key
+  negative_control_trace: path | null  # F3: executed expected-red counter-strategy
+  eval_health_trace: path | null       # F5: per-run expected-red / expected-green controls
+  receipt: path | null                 # oracle/scorer/candidate/model/seed/tool-policy/run-id
 ```
 
 Rules:
@@ -55,6 +59,12 @@ Rules:
 - Deferred pressure is **not** a candidate status; it is a `FRONTIER`-level fact
   (`pressure_status: blocked`, `pressure_debt: explicitly_deferred`, with a named
   `blocker`, `next_pressure`, and `claim_scope: search_only`).
+- When the overlay trusts-or-mutates the evaluator, the `### Oracle-integrity
+  pressure` rows (`primitives/benchmark-frontier.md`) are the **floor** of the trust
+  chain: `claim_scope` stays `search_only` until every such row is paid by an
+  out-of-cone executed artifact, below holdout / adversarial / meta-eval. The
+  `oracle_check_trace` / `negative_control_trace` / `eval_health_trace` / `receipt`
+  paths above are how those rows cash out; a non-null path alone pays nothing.
 
 ## FRONTIER Role
 
@@ -83,3 +93,6 @@ records its unpaid pressure here, in `deferred_pressure`, never as a row status.
 
 When `eval_health != calibrated`, the loop may claim harness progress only.
 Product progress waits for calibrated or explicitly bounded evaluator pressure.
+When the overlay seeds oracle-integrity rows, an unpaid row holds `eval_health`
+below `calibrated` by definition: `product_progress` is unreachable until the
+evaluator's own integrity is paid by out-of-cone executed evidence.

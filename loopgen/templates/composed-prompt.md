@@ -125,6 +125,17 @@ is invisible — the preamble MUST enumerate every divergence axis + its source.
      pressure accounting and does not inherit benchmark artifact roles.
    - Record `overlay: benchmark-frontier` in provenance when active. The
      weighted-Hamming distance table remains unchanged.
+   - **When the bound evaluator is trusted-or-mutated** (an LLM judge, a
+     generated/minted answer key, or eval-set evolution), seed the
+     `### Oracle-integrity pressure` rows (`primitives/benchmark-frontier.md`) into
+     `loop/STATE.md` `pressure_objects`, so `{{PRESSURE_SURFACE}}` fires via its own
+     ≥1-object gate (step 7a). The two gates **nest**: oracle-integrity rows are a
+     strict subset of overlay-active-and-oracle-trusted cases, so they never appear
+     without the overlay block that explains them, and a pure archetype — or a
+     benchmark overlay over a deterministic non-LLM, non-minted oracle — seeds none
+     and stays byte-identical. The frontload Evaluator-integrity audit
+     (`primitives/frontload-audit.md`) names any unmet integrity property as a
+     `derivation-gap` before emit.
 7a. **Apply pressure surface** (`primitives/pressure.md`):
    - If `count(pressure_objects) ≥ 1` at compose (the frontload latent-pressure
      mining step or a human seed produced ≥1 row), replace `{{PRESSURE_SURFACE}}`

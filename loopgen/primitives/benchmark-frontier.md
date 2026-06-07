@@ -123,6 +123,47 @@ budget, scope, or authority blocks stronger pressure.
 If evaluator health is anything other than calibrated, the loop may claim
 harness progress, not product progress.
 
+### Oracle-integrity pressure
+
+When the mutable surface includes the **evaluator itself** — new tasks, answer
+keys, LLM judges, or rubric edits — the loop is editing the thing that grades it.
+Karpathy's frozen-metric guarantee is gone, and one rule replaces it: **no
+candidate may author, verify, and promote the evidence for its own acceptance.**
+A promotion predicate must be computed from evidence *outside the candidate's
+mutation closure*, and `claim_scope` may not outrun the weakest trust boundary in
+that chain (generator ≠ oracle-author ≠ judge ≠ scorer ≠ promoter).
+
+On overlay activation, seed these rows into `loop/STATE.md` `pressure_objects`
+(rendered to `loop/PRESSURE.md`, re-read each pass). Each is `source: mined`,
+`strength: high`, `mode: burden`, `on_violation: owes_proof`, with a
+**pre-registered `satisfied_by`** that names a tier-1/2 (`evidence-tier.md`)
+**executed** artifact authored **outside the candidate's authority cone** — never
+the loop's own prose, never a non-null path alone:
+
+| id | guards against | satisfied_by (pre-registered · executed · out-of-cone) | expires |
+|---|---|---|---|
+| `oracle.ground-truth` | a self-minted answer key | the key re-derived by a NON-generator route — a different-family model, a deterministic transform oracle, or a structural round-trip (apply the stated transform to the input, compare to the key) — recorded per candidate | key changes |
+| `oracle.judge-diversity` | a same-author judge | a judge family per role distinct from the generator family; a same-family verdict is `pending`, never `accepted` | roster changes |
+| `oracle.negative-executed` | an asserted exclusion | the proposed counter-strategy RUN as an expected-red and observed to fail the scorer (not a label), against a **declared comparator boundary** (allowed tool class / budget / languages — an undeclared boundary makes the run theater) | per candidate |
+| `oracle.n-replicate` | a single-seed number | the gating metric at N≥`oracle-replicate-N` (frontload-tunable, default 3, alongside quiet-signal-N / stuck-attempt-N) as a **pass-rate**, not a 0/100 binary; N=1 is stamped `provisional:N=1` and caps status at `pending-needs-cross-seed` | per metric run |
+| `oracle.expected-red` | a toothless scorer | a known-bad control that scored fail AND a known-good that scored pass THIS run; a green known-bad aborts the run (`eval_health: gamed`) | per run (no carry-over) |
+| `oracle.provenance` | a lying manifest | the recorded judge identity equal to the per-step post-fallback model actually used, byte-for-byte | per manifest write |
+| `oracle.write-ahead` | a lost paid run | judge calls at temperature 0 (or recorded majority-vote) AND a write-ahead attempt/spend row appended before each paid or multi-minute cell | per paid cell |
+| `oracle.receipts` | a driftable measurement | the claim bound to a receipt — oracle hash, scorer version, candidate hash, actual model, seed, tool policy, run id — so the printed number cannot drift or be gamed silently | per measurement |
+
+**The coupling (the wall).** While ANY of these rows is `active`/unpaid,
+`FRONTIER.claim_scope` MAY NOT be `product_progress`, no candidate may reach
+`pressure_paid`, and `eval_health` is treated as not `calibrated` — the loop may
+record harness progress only. A green search trace cannot retire an
+oracle-integrity row; only its pre-registered executed artifact pays it, and an
+unpaid-oracle verdict is read as tier-3 self-narrated prose (`evidence-tier.md`):
+it may inform, it pays nothing. These rows are the **floor** of the trust chain,
+below holdout / adversarial / meta-eval; they merge into the eval ladder below
+(rung 5 adversarial controls pays `oracle.negative-executed` + `oracle.expected-red`;
+rung 6 meta-eval pays `oracle.judge-diversity`). Deferral is a `FRONTIER`-level
+fact (`pressure_status: blocked`, named `blocker`, `claim_scope: search_only`),
+never a candidate status and never silent.
+
 {{INCLUDE primitives/eval-ladder.md}}
 
 ### Green-trace rule

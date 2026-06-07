@@ -140,6 +140,8 @@ and blocks promotion until the design is revised.
   `loop/DOMAIN_SPEC.md`, `loop/BENCHMARK.md`, `loop/CANDIDATES.jsonl`,
   `loop/FRONTIER.json`, and `loop/traces/`; candidate lineage; evaluator
   health; pressure debt; eval ladder; search/holdout/adversarial separation.
+  When the bound evaluator is itself LLM-judged or its answer key is minted, also
+  the `### Oracle-integrity pressure` rows and the `claim_scope` coupling (case 13).
 - **Must not:** appear as a fifth archetype, change weighted-Hamming distance,
   or make pure frontier emit the candidate artifact bundle.
 
@@ -252,6 +254,36 @@ they fire always. It exists because verification had drifted entirely to the
 compose-time surface — the byte-identity cases prove assembly, nothing else
 proved behavior.
 
+### 13. Oracle-integrity overlay (positive) + zero-eval byte-identity (negative)
+
+The benchmark-frontier overlay's evaluator-integrity contract. Proves the eight
+`### Oracle-integrity pressure` rows seed and gate when the evaluator is under the
+candidate's control, and stay absent (byte-identical) otherwise.
+
+- **Positive task:** a benchmark-frontier loop whose evaluator is mutated or
+  LLM-judged — e.g. "Evolve the bench eval-set overnight: generate new cases, gate
+  them, grow the suite." (an eval-set-evolution loop — the mdtools `auto_research`
+  shape).
+- **Expected (positive):** on overlay activation the eight rows (`oracle.ground-truth`,
+  `judge-diversity`, `negative-executed`, `n-replicate`, `expected-red`,
+  `provenance`, `write-ahead`, `receipts`) are seeded into `pressure_objects` (so
+  `{{PRESSURE_SURFACE}}` fires), each with a pre-registered **out-of-cone executed**
+  `satisfied_by`. The composed prompt carries the **coupling**: while any row is
+  unpaid, `claim_scope` may not be `product_progress`, no candidate reaches
+  `pressure_paid`, and `eval_health` is not `calibrated`. The frontload preamble
+  names any unmet integrity property (P1–P8) as a `derivation-gap` with
+  `runnable: false`. The rows merge into eval-ladder rungs 5/6, not a parallel checklist.
+- **Negative (byte-identity):** a benchmark overlay over a **deterministic, non-LLM,
+  non-minted** oracle (a frozen metric on held data — the Karpathy shape) trusts no
+  oracle-under-test and seeds **no** oracle-integrity rows; and every pure archetype
+  with no overlay (cases 1–4) seeds none — `{{PRESSURE_SURFACE}}` stays
+  empty/stripped and the prompt is byte-identical (case 10's guarantee, unaffected).
+- **Must not:** seed oracle-integrity rows on a pure frontier (case 1) or any
+  zero-eval pure archetype; add a preamble integrity line when no oracle-object
+  binds; change the weighted-Hamming distance (pressure + overlay are not axes). The
+  rows are double-gated — overlay-active **and** the oracle trusted-or-mutated —
+  so neither gate fires on a pure case.
+
 ## How to run
 
 The probe is an adversarial workflow: for each pure case, compose via the
@@ -274,9 +306,13 @@ pressure object is seeded or mined, with the classification distance unchanged.
 Row 12 is a behavioral trace, not a byte-diff: drive a seeded-pressure loop over
 N iterations and assert none of the five runtime-safety invariants (OPEN-gate
 deprioritization, false-negative backpressure wall, unevidenced `paid`, premature
-`stale` / retire, unbounded ledger) is violated.
+`stale` / retire, unbounded ledger) is violated. Row 13 is compose-time again:
+compose an eval-set-evolution / LLM-judged benchmark loop and assert the eight
+oracle-integrity rows seed with the `claim_scope` coupling, then compose a
+deterministic-oracle benchmark and a pure archetype and assert neither seeds them
+(byte-identical).
 
-All twelve rows are required; a gate run that stops at row 7 does not exercise
-the benchmark-frontier overlay this probe is meant to protect. Rows 1–11 are
+All thirteen rows are required; a gate run that stops at row 7 does not exercise
+the benchmark-frontier overlay this probe is meant to protect. Rows 1–11 and 13 are
 compose-time; row 12 is the runtime-safety counterpart that closes the parity
 drift between what the probe proved (assembly) and where the risk lives (runtime).

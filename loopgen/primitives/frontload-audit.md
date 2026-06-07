@@ -80,7 +80,11 @@ For each checklist item, do exactly one of:
   the convention exists.
 - **Benchmark-frontier overlay** — for frontier-shaped tasks, bind a concrete
   benchmark/eval/harness object, evaluation unit, and durable evidence location,
-  or record a derivation gap if benchmark language appears without an object.
+  or record a derivation gap if benchmark language appears without an object. When
+  the bound oracle is **trusted-or-mutated** (an LLM judge, a generated/minted
+  answer key, or eval-set evolution), run the **Evaluator-integrity audit** (below).
+  A loop with no bound oracle-object, or one over a deterministic non-LLM oracle,
+  runs no audit and emits no integrity lines — the preamble is unchanged.
 - **Parameters / thresholds** — quiet-signal N, stuck-attempt N, cash-out N.
 - **Metered/irreversible resources** — any paid tier or quota the loop consumes
   repeatedly while unattended (paid-API $, cloud compute, rate-limited quota). If
@@ -93,12 +97,64 @@ criteria source, authority order, final-verify, dependency topology; story —
 lane, surface class, storyboard path, fixtures, app URL; greenfield — target
 adjacency, INTENT hypotheses, model identity, paid APIs, preloop checklist.
 
+## Evaluator-integrity audit (eval / benchmark / frontier loops)
+
+REQUIRED whenever frontload binds a benchmark/eval/harness object the loop
+**trusts or mutates** — an LLM-as-judge, a generated/minted answer key, or
+eval-set evolution. Such a loop grades its own homework, so the canon's
+evaluator-under-test rule becomes an emission gate: **no candidate may author,
+verify, and promote the evidence for its own acceptance.** The loop is **not
+emittable** unless all eight properties are resolved, defaulted, or
+escalate-marked, each against a grep-confirmable on-disk surface (the same
+"confirm it's observable" discipline the budget and mined-row rules use). The
+properties map 1:1 to the `### Oracle-integrity pressure` rows
+(`primitives/benchmark-frontier.md`); this audit is their compile-time half.
+
+- **P1 oracle-provenance** — every answer-key / expected-output the scorer reads
+  is re-derived or verified by a channel OTHER than its generator (different-family
+  model, deterministic transform, structural round-trip, or recorded human
+  spot-check), the method a field in `BENCHMARK`. A generator that writes both the
+  input and the expected output with no independent check is non-emittable.
+- **P2 judge-independence** — each judge role names its model family; any role
+  sharing the generator's family caps the candidate at `pending`. Default-resolve
+  into the `consult-capability` tier (tier-0 → human-look gate; tier-2/3 →
+  cross-family).
+- **P3 executed-negative-invariant** — every exclusion that gates promotion ("no
+  baseline strategy solves this") names the executable that PROVES it by running
+  the proposed counter-strategy as an expected-red, against a **declared comparator
+  boundary** (allowed tool class / budget / languages). An asserted-not-executed
+  exclusion is non-emittable.
+- **P4 expected-red control** — `BENCHMARK` binds ≥1 expected-red and ≥1
+  expected-green control that run every iteration; a run whose expected-red scores
+  green aborts as `evaluator_invalid`. Absent → non-emittable.
+- **P5 repeat-discipline** — any stochastic gate is computed at N≥`oracle-replicate-N`
+  (frontload-tunable, default 3, alongside quiet-signal-N / stuck-attempt-N) as a
+  pass-rate, or stamped `provisional:N=1` and barred above `pending-needs-cross-seed`;
+  judge temperature pinned to 0 or majority-vote. A single-seed binary stamped as a
+  measured gap is non-emittable.
+- **P6 provenance-not-drift** — every field recording WHICH model judged rolls up
+  the model that actually ran after fallback, never the resolved default.
+- **P7 write-ahead ledger** — every paid / multi-minute eval cell write-aheads an
+  attempt/spend row before the call; a pipeline that only WARNs-and-continues on
+  crash is non-emittable.
+- **P8 measurement-receipts** — the claim is bound to a receipt (oracle hash,
+  scorer version, candidate hash, actual model, seed, tool policy, run id); a frozen
+  scorer is not trusted unless the measurement path is also outside the candidate's
+  control.
+
+For each unmet property do exactly one of the four frontload actions (resolve /
+smallest-reversible-default / escalate-mark / resolve-into-policy). A loop with
+**no** bound oracle-object, or one whose oracle is a deterministic non-LLM,
+non-minted metric, runs no audit and emits no integrity lines — byte-identical.
+
 ## Derivation-gap concept
 
 Anything neither resolved, defaulted, nor escalate-marked is a **derivation
 gap** — a future block waiting to happen. The emitted prompt's
 `halt-cause-classifier` flags `derivation-gap` halts so the next derivation
-pass closes them.
+pass closes them. An unmet Evaluator-integrity property (above) is a derivation
+gap that additionally sets `runnable: false` until closed — an oracle a loop
+grades itself against is not emittable on hope.
 
 ## Composition notes
 

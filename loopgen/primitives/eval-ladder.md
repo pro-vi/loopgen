@@ -51,3 +51,22 @@ claim product progress.
 - Budget, scope, or external authority may set
   `pressure_debt: explicitly_deferred`, but the final report must name the
   blocker and next pressure.
+
+## Oracle-integrity rows (when the overlay seeds them)
+
+When the loop mutates or trusts the evaluator, the `### Oracle-integrity pressure`
+rows (`primitives/benchmark-frontier.md`) are the **staged view of this ladder**,
+not a parallel checklist:
+
+- Rung 5 (adversarial controls) pays `oracle.negative-executed` and
+  `oracle.expected-red`: the executed expected-red counter-strategy and the per-run
+  known-bad / known-good controls are the same evidence.
+- Rung 6 (meta-eval) pays `oracle.judge-diversity`: evaluating the evaluator's
+  independence is the meta-eval rung.
+- `oracle.ground-truth`, `oracle.n-replicate`, `oracle.provenance`,
+  `oracle.write-ahead`, and `oracle.receipts` gate entry to the ladder at all:
+  until each is paid by an out-of-cone executed artifact, no rung verdict may lift
+  `claim_scope` to `product_progress`.
+
+While any oracle-integrity row is unpaid, `eval_health` is treated as not
+`calibrated`, so the ladder yields harness progress only.
