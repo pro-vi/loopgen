@@ -32,10 +32,10 @@ artifacts:
   holdout_trace: path | null
   adversarial_trace: path | null
   meta_eval_trace: path | null
-  oracle_check_trace: path | null      # F1: independent re-derivation of the key
-  negative_control_trace: path | null  # F3: executed expected-red counter-strategy
-  eval_health_trace: path | null       # F5: per-run expected-red / expected-green controls
-  receipt: path | null                 # oracle/scorer/candidate/model/seed/tool-policy/run-id
+  oracle_check_trace: path | null      # oracle.ground-truth (P1): independent re-derivation of the key
+  negative_control_trace: path | null  # oracle.negative-executed (P3): executed expected-red counter-strategy
+  eval_health_trace: path | null       # oracle.expected-red (P5): per-run expected-red / expected-green controls
+  receipt: path | null                 # oracle.receipts (P8): oracle/scorer/candidate/model/seed/tool-policy/run-id
 ```
 
 Rules:

@@ -68,5 +68,7 @@ not a parallel checklist:
   until each is paid by an out-of-cone executed artifact, no rung verdict may lift
   `claim_scope` to `product_progress`.
 
-While any oracle-integrity row is unpaid, `eval_health` is treated as not
-`calibrated`, so the ladder yields harness progress only.
+While any oracle-integrity row is unpaid, no candidate reaches `pressure_paid`,
+`claim_scope` may not be `product_progress`, and `eval_health` is treated as not
+`calibrated` — the same three-part wall as `primitives/benchmark-frontier.md`, so
+the ladder yields harness progress only.

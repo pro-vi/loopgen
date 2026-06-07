@@ -110,37 +110,52 @@ escalate-marked, each against a grep-confirmable on-disk surface (the same
 properties map 1:1 to the `### Oracle-integrity pressure` rows
 (`primitives/benchmark-frontier.md`); this audit is their compile-time half.
 
-- **P1 oracle-provenance** — every answer-key / expected-output the scorer reads
-  is re-derived or verified by a channel OTHER than its generator (different-family
-  model, deterministic transform, structural round-trip, or recorded human
-  spot-check), the method a field in `BENCHMARK`. A generator that writes both the
-  input and the expected output with no independent check is non-emittable.
-- **P2 judge-independence** — each judge role names its model family; any role
-  sharing the generator's family caps the candidate at `pending`. Default-resolve
-  into the `consult-capability` tier (tier-0 → human-look gate; tier-2/3 →
-  cross-family).
-- **P3 executed-negative-invariant** — every exclusion that gates promotion ("no
-  baseline strategy solves this") names the executable that PROVES it by running
-  the proposed counter-strategy as an expected-red, against a **declared comparator
-  boundary** (allowed tool class / budget / languages). An asserted-not-executed
-  exclusion is non-emittable.
-- **P4 expected-red control** — `BENCHMARK` binds ≥1 expected-red and ≥1
-  expected-green control that run every iteration; a run whose expected-red scores
-  green aborts as `evaluator_invalid`. Absent → non-emittable.
-- **P5 repeat-discipline** — any stochastic gate is computed at N≥`oracle-replicate-N`
-  (frontload-tunable, default 3, alongside quiet-signal-N / stuck-attempt-N) as a
-  pass-rate, or stamped `provisional:N=1` and barred above `pending-needs-cross-seed`;
-  judge temperature pinned to 0 or majority-vote. A single-seed binary stamped as a
-  measured gap is non-emittable.
-- **P6 provenance-not-drift** — every field recording WHICH model judged rolls up
-  the model that actually ran after fallback, never the resolved default.
-- **P7 write-ahead ledger** — every paid / multi-minute eval cell write-aheads an
-  attempt/spend row before the call; a pipeline that only WARNs-and-continues on
-  crash is non-emittable.
-- **P8 measurement-receipts** — the claim is bound to a receipt (oracle hash,
-  scorer version, candidate hash, actual model, seed, tool policy, run id); a frozen
-  scorer is not trusted unless the measurement path is also outside the candidate's
-  control.
+Each property binds the same-named row in `benchmark-frontier.md` (P1–P8 in row
+order — see the mapping table there):
+
+- **P1 key-independence** (`oracle.ground-truth`) — every answer-key /
+  expected-output the scorer reads is re-derived or verified by a channel OTHER
+  than its generator (different-family model, deterministic transform, a round-trip
+  whose transform is pinned/frozen in `BENCHMARK` and is not the candidate's own
+  hypothesis, or recorded human spot-check), the method a field in `BENCHMARK`. A
+  generator that writes both the input and the expected output with no independent
+  check is non-emittable.
+- **P2 judge-independence** (`oracle.judge-diversity`) — each judge role names its
+  model family; any role sharing the generator's family caps the candidate at
+  `pending`. Default-resolve into the `consult-capability` tier (tier-0 → human-look
+  gate; tier-2/3 → cross-family).
+- **P3 executed-negative-invariant** (`oracle.negative-executed`) — every exclusion
+  that gates promotion ("no baseline strategy solves this") names the executable
+  that PROVES it by running the proposed counter-strategy as an expected-red,
+  against a **declared comparator boundary** (allowed tool class / budget /
+  languages). An asserted-not-executed exclusion is non-emittable.
+- **P4 repeat-discipline** (`oracle.n-replicate`) — any stochastic gate is computed
+  at N≥`oracle-replicate-N` (frontload-tunable, default 3, alongside quiet-signal-N
+  / stuck-attempt-N) as a pass-rate, or stamped `provisional:N=1` and barred above
+  `pending-needs-cross-seed`; judge temperature pinned to 0 or majority-vote. A
+  single-seed binary stamped as a measured gap is non-emittable.
+- **P5 expected-red control** (`oracle.expected-red`) — `BENCHMARK` binds ≥1
+  expected-red and ≥1 expected-green control that run every iteration; a run whose
+  expected-red scores green sets `eval_health: gamed` and checkpoints with
+  `checkpoint_reason: evaluator_invalid`. Absent → non-emittable.
+- **P6 provenance-not-drift** (`oracle.provenance`) — every field recording WHICH
+  model judged rolls up the model that actually ran after fallback, never the
+  resolved default.
+- **P7 write-ahead ledger** (`oracle.write-ahead`) — every paid / multi-minute eval
+  cell write-aheads an attempt/spend row before the call; a pipeline that only
+  WARNs-and-continues on crash is non-emittable.
+- **P8 measurement-receipts** (`oracle.receipts`) — the claim is bound to a receipt
+  (oracle hash, scorer version, candidate hash, actual model, seed, tool policy, run
+  id); a frozen scorer is not trusted unless the measurement path is also outside
+  the candidate's control.
+
+The trust trigger is itself recorded — `oracle_trust: trusted-or-mutated |
+deterministic-frozen` under `frontload` — so the bind is grep-confirmable like the
+budget / mined-row binds, not self-asserted. "Out-of-cone" independence
+(different-family judge, non-generator key) is **recorded and audited at compose,
+enforced at runtime**: the compiler caps the claim until a row cites an out-of-cone
+executed artifact, but cannot prove a named sibling model is genuinely independent —
+that verification is impl-side (a named residual, not a closed one).
 
 For each unmet property do exactly one of the four frontload actions (resolve /
 smallest-reversible-default / escalate-mark / resolve-into-policy). A loop with

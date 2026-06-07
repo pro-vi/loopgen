@@ -133,8 +133,10 @@ A promotion predicate must be computed from evidence *outside the candidate's
 mutation closure*, and `claim_scope` may not outrun the weakest trust boundary in
 that chain (generator ≠ oracle-author ≠ judge ≠ scorer ≠ promoter).
 
-On overlay activation, seed these rows into `loop/STATE.md` `pressure_objects`
-(rendered to `loop/PRESSURE.md`, re-read each pass). Each is `source: mined`,
+On overlay activation **when the bound oracle is trusted-or-mutated** (an LLM
+judge, a generated/minted answer key, or eval-set evolution — never a
+deterministic non-LLM, non-minted metric), seed these rows into `loop/STATE.md`
+`pressure_objects` (rendered to `loop/PRESSURE.md`, re-read each pass). Each is `source: mined`,
 `strength: high`, `mode: burden`, `on_violation: owes_proof`, with a
 **pre-registered `satisfied_by`** that names a tier-1/2 (`evidence-tier.md`)
 **executed** artifact authored **outside the candidate's authority cone** — never
@@ -142,14 +144,30 @@ the loop's own prose, never a non-null path alone:
 
 | id | guards against | satisfied_by (pre-registered · executed · out-of-cone) | expires |
 |---|---|---|---|
-| `oracle.ground-truth` | a self-minted answer key | the key re-derived by a NON-generator route — a different-family model, a deterministic transform oracle, or a structural round-trip (apply the stated transform to the input, compare to the key) — recorded per candidate | key changes |
+| `oracle.ground-truth` | a self-minted answer key | the key re-derived by a NON-generator route — a different-family model, a deterministic transform oracle, or a structural round-trip whose transform is **pinned/frozen in `BENCHMARK` with a receipt hash, never the candidate's own hypothesis transform** (minting `k = T(input)` then re-running the same `T` to "verify" is author = verifier — it pays nothing) — recorded per candidate | key changes |
 | `oracle.judge-diversity` | a same-author judge | a judge family per role distinct from the generator family; a same-family verdict is `pending`, never `accepted` | roster changes |
 | `oracle.negative-executed` | an asserted exclusion | the proposed counter-strategy RUN as an expected-red and observed to fail the scorer (not a label), against a **declared comparator boundary** (allowed tool class / budget / languages — an undeclared boundary makes the run theater) | per candidate |
 | `oracle.n-replicate` | a single-seed number | the gating metric at N≥`oracle-replicate-N` (frontload-tunable, default 3, alongside quiet-signal-N / stuck-attempt-N) as a **pass-rate**, not a 0/100 binary; N=1 is stamped `provisional:N=1` and caps status at `pending-needs-cross-seed` | per metric run |
-| `oracle.expected-red` | a toothless scorer | a known-bad control that scored fail AND a known-good that scored pass THIS run; a green known-bad aborts the run (`eval_health: gamed`) | per run (no carry-over) |
+| `oracle.expected-red` | a toothless scorer | a known-bad control that scored fail AND a known-good that scored pass THIS run; a green known-bad sets `eval_health: gamed` and checkpoints with `checkpoint_reason: evaluator_invalid` | per run (no carry-over) |
 | `oracle.provenance` | a lying manifest | the recorded judge identity equal to the per-step post-fallback model actually used, byte-for-byte | per manifest write |
 | `oracle.write-ahead` | a lost paid run | judge calls at temperature 0 (or recorded majority-vote) AND a write-ahead attempt/spend row appended before each paid or multi-minute cell | per paid cell |
 | `oracle.receipts` | a driftable measurement | the claim bound to a receipt — oracle hash, scorer version, candidate hash, actual model, seed, tool policy, run id — so the printed number cannot drift or be gamed silently | per measurement |
+
+Each row binds exactly one frontload audit property (`frontload-audit.md`, P1–P8
+in this same order) and, where it cashes out per candidate, one trace field
+(`references/benchmark-frontier-artifacts.md`). The 1:1 is stated here, never
+inferred from a name:
+
+| row | audit property | candidate trace |
+|---|---|---|
+| `oracle.ground-truth` | P1 key-independence | `oracle_check_trace` |
+| `oracle.judge-diversity` | P2 judge-independence | judge roster in `BENCHMARK` |
+| `oracle.negative-executed` | P3 executed-negative-invariant | `negative_control_trace` |
+| `oracle.n-replicate` | P4 repeat-discipline | gap pass-rate |
+| `oracle.expected-red` | P5 expected-red control | `eval_health_trace` |
+| `oracle.provenance` | P6 provenance-not-drift | manifest model field |
+| `oracle.write-ahead` | P7 write-ahead ledger | `eval_spend_ledger` row |
+| `oracle.receipts` | P8 measurement-receipts | `receipt` |
 
 **The coupling (the wall).** While ANY of these rows is `active`/unpaid,
 `FRONTIER.claim_scope` MAY NOT be `product_progress`, no candidate may reach
