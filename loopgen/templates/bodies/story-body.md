@@ -480,9 +480,9 @@ repo uses a non-JSON evidence format.
 Default behavior is to carry one focused story through promotion when the
 fix is narrow, reversible, and evidence-backed. Keep the change scoped to
 the selected story, preserve existing product behavior outside the
-acceptance criteria, and use the repo's normal validation. If the repo
-expects commits and the user has authorized autonomous loop work, make one
-focused commit per promoted item.
+acceptance criteria, and use the repo's normal validation. Every promoted
+item that changes tracked files gets one focused Conventional Commit by
+default; pushes remain separately authorized.
 
 Hand off instead of implementing when the result requires broad product
 direction, new fixtures/goldens, unclear data semantics, risky migrations,

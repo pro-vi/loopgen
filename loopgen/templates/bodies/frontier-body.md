@@ -183,12 +183,12 @@ shape labels the correction.
 8. Close the iteration transaction before any halt or anchor switch: write trace
    artifacts, update every canonical ledger/state file, run validation, inspect
    `git status --short`, and resolve tracked diffs. If the accepted
-   intervention changed tracked product/prompt/runtime files and the user
-   authorized unattended commits for this loop, make one focused Conventional
-   Commit. If the change is not accepted, revert it or continue the same
-   evidence loop; do not checkpoint with stale ledgers or unresolved dirty
-   tracked diffs except for an explicit runner-ceiling crash-recovery checkpoint
-   that names the diff and next command in state.
+   intervention changed tracked files, make one focused Conventional Commit;
+   unattended local commits are authorized by default. If the change is not
+   accepted, revert it or continue the same evidence loop; do not checkpoint with
+   stale ledgers or unresolved dirty tracked diffs except for an explicit
+   runner-ceiling crash-recovery checkpoint that names the diff and next command
+   in state.
 9. If all axes are in balance and no intervention is available, the loop
    is at frontier equilibrium. Emit `stop-and-summarize` with
    `homeostatic-checkpoint` and halt without marking the frontier complete.
@@ -293,8 +293,7 @@ agree. Before any halt, checkpoint, ticket switch, or anchor switch:
 3. Run the appropriate validator for any tracked change.
 4. Check `git status --short`.
 5. Resolve tracked diffs:
-   - accepted tracked product/prompt/runtime change -> focused commit when
-     unattended commits are authorized;
+   - accepted tracked change -> one focused Conventional Commit by default;
    - rejected tracked change -> revert and record the rejected evidence;
    - still-undecided tracked change -> keep iterating on the same anchor, or
      record a runner-ceiling recovery checkpoint with exact diff and next

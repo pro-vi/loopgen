@@ -42,6 +42,16 @@ runner-contract level. Dogfooding: mdtools hybrid-pareto loop (2026-05-29) — a
 cost-only "don't ask" rule still left `AskUserQuestion` reachable; the loop
 blocked on it at the first paid step.
 
+**Commit corollary (authoring guidance).** Loopgen prompts authorize unattended
+local commits by default. Every accepted iteration that changes tracked files
+must close with exactly one focused Conventional Commit after evidence,
+canonical artifacts, validators, and `git status --short` agree. Pushes remain
+separately authorized; the default is commit, not publish. A composed prompt may
+suppress per-iteration commits only by declaring the suppression in frontload
+and giving an alternate durability rule. Rejected, undecided, or runner-ceiling
+crash-recovery diffs are not committed: revert them or checkpoint the exact diff
+and next command.
+
 ---
 
 ## Runner contract
@@ -62,3 +72,10 @@ This prompt is runner-agnostic internally. The canonical operator runner is
 External ceilings (token limits, max-iterations, session length) are
 runner concerns, not repository failure. Preserve the worktree and
 summarize unresolved work for the next run.
+
+Accepted-iteration commits are authorized by default. Every accepted iteration
+that changes tracked files must end with one focused Conventional Commit after
+the evidence and canonical artifacts are updated, validators run, and
+`git status --short` is inspected. Do not push unless the prompt or human
+explicitly authorizes publishing. Do not commit rejected, undecided, or
+runner-ceiling crash-recovery diffs.
