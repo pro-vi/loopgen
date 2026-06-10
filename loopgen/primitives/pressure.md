@@ -28,7 +28,7 @@ A pressure is a structured row in `loop/STATE.md` `pressure_objects` (rendered t
 | field | values | role |
 |---|---|---|
 | `id` | stable string | anchor for ledger + read-back |
-| `source` | `authored` · `mined` · `backpressure` | who put it in the field (human seed · latent-mined · fed back from an outcome) |
+| `source` | `authored` · `mined` · `backpressure` · `overlay` | who put it in the field (human seed · latent-mined · fed back from an outcome · seeded by a composition overlay as a fixed contract, e.g. benchmark-frontier oracle-integrity — provenance is the overlay activation + bound object, exempt from the `mined` low/salience entry rule) |
 | `scope` | path / surface / criterion / dimension | what it covers |
 | `mode` | `salience` · `preference` · `burden` · `constraint` | how it bends a move (authority on the surface) |
 | `strength` | `low` · `medium` · `high` | how hard it tilts |

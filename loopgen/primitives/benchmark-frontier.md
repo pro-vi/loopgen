@@ -136,18 +136,21 @@ that chain (generator ≠ oracle-author ≠ judge ≠ scorer ≠ promoter).
 On overlay activation **when the bound oracle is trusted-or-mutated** (an LLM
 judge, a generated/minted answer key, or eval-set evolution — never a
 deterministic non-LLM, non-minted metric), seed these rows into `loop/STATE.md`
-`pressure_objects` (rendered to `loop/PRESSURE.md`, re-read each pass). Each is `source: mined`,
-`strength: high`, `mode: burden`, `on_violation: owes_proof`, with a
-**pre-registered `satisfied_by`** that names a tier-1/2 (`evidence-tier.md`)
-**executed** artifact authored **outside the candidate's authority cone** — never
-the loop's own prose, never a non-null path alone:
+`pressure_objects` (rendered to `loop/PRESSURE.md`, re-read each pass). Each is
+`source: overlay` — a fixed contract installed by the overlay, not a latent-mined
+convention, so its provenance is the overlay activation + the bound oracle-object
+(grep-confirmable) and it is **exempt from the `mined` low/salience entry rule**
+(`primitives/frontload-audit.md`): it enters at `strength: high`, `mode: burden`,
+`on_violation: owes_proof`, with a **pre-registered `satisfied_by`** that names a
+tier-1/2 (`evidence-tier.md`) **executed** artifact authored **outside the
+candidate's authority cone** — never the loop's own prose, never a non-null path alone:
 
 | id | guards against | satisfied_by (pre-registered · executed · out-of-cone) | expires |
 |---|---|---|---|
 | `oracle.ground-truth` | a self-minted answer key | the key re-derived by a NON-generator route — a different-family model, a deterministic transform oracle, or a structural round-trip whose transform is **pinned/frozen in `BENCHMARK` with a receipt hash, never the candidate's own hypothesis transform** (minting `k = T(input)` then re-running the same `T` to "verify" is author = verifier — it pays nothing) — recorded per candidate | key changes |
-| `oracle.judge-diversity` | a same-author judge | a judge family per role distinct from the generator family; a same-family verdict is `pending`, never `accepted` | roster changes |
+| `oracle.judge-diversity` | a same-author judge | a judge family per role distinct from the generator family; a same-family verdict does not pay this row — `claim_scope` stays `search_only`, never `product_progress` | roster changes |
 | `oracle.negative-executed` | an asserted exclusion | the proposed counter-strategy RUN as an expected-red and observed to fail the scorer (not a label), against a **declared comparator boundary** (allowed tool class / budget / languages — an undeclared boundary makes the run theater) | per candidate |
-| `oracle.n-replicate` | a single-seed number | the gating metric at N≥`oracle-replicate-N` (frontload-tunable, default 3, alongside quiet-signal-N / stuck-attempt-N) as a **pass-rate**, not a 0/100 binary; N=1 is stamped `provisional:N=1` and caps status at `pending-needs-cross-seed` | per metric run |
+| `oracle.n-replicate` | a single-seed number | the gating metric at N≥`oracle-replicate-N` (frontload-tunable, default 3, alongside quiet-signal-N / stuck-attempt-N) as a **pass-rate**, not a 0/100 binary; a single seed (N=1) is `provisional` evidence that does not pay this row — the candidate keeps its earned lifecycle status and `claim_scope` stays `search_only` | per metric run |
 | `oracle.expected-red` | a toothless scorer | a known-bad control that scored fail AND a known-good that scored pass THIS run; a green known-bad sets `eval_health: gamed` and checkpoints with `checkpoint_reason: evaluator_invalid` | per run (no carry-over) |
 | `oracle.provenance` | a lying manifest | the recorded judge identity equal to the per-step post-fallback model actually used, byte-for-byte | per manifest write |
 | `oracle.write-ahead` | a lost paid run | judge calls at temperature 0 (or recorded majority-vote) AND a write-ahead attempt/spend row appended before each paid or multi-minute cell | per paid cell |

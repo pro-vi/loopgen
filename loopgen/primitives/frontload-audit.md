@@ -77,7 +77,9 @@ For each checklist item, do exactly one of:
   convention nudges attention without bending a gate; promotion to `burden` /
   `constraint` (a wall) needs the same reproduced tier-1/2 evidence a
   backpressure wall does (`primitives/pressure.md`), never the bare fact that
-  the convention exists.
+  the convention exists. (The benchmark-frontier overlay's oracle-integrity rows
+  are `source: overlay`, a fixed contract — not `mined` — so this low/salience
+  entry rule does not apply to them; see `primitives/benchmark-frontier.md`.)
 - **Benchmark-frontier overlay** — for frontier-shaped tasks, bind a concrete
   benchmark/eval/harness object, evaluation unit, and durable evidence location,
   or record a derivation gap if benchmark language appears without an object. When
@@ -121,9 +123,9 @@ order — see the mapping table there):
   generator that writes both the input and the expected output with no independent
   check is non-emittable.
 - **P2 judge-independence** (`oracle.judge-diversity`) — each judge role names its
-  model family; any role sharing the generator's family caps the candidate at
-  `pending`. Default-resolve into the `consult-capability` tier (tier-0 → human-look
-  gate; tier-2/3 → cross-family).
+  model family; any role sharing the generator's family does not pay
+  `oracle.judge-diversity` (`claim_scope` stays `search_only`). Default-resolve into
+  the `consult-capability` tier (tier-0 → human-look gate; tier-2/3 → cross-family).
 - **P3 executed-negative-invariant** (`oracle.negative-executed`) — every exclusion
   that gates promotion ("no baseline strategy solves this") names the executable
   that PROVES it by running the proposed counter-strategy as an expected-red,
@@ -131,9 +133,10 @@ order — see the mapping table there):
   languages). An asserted-not-executed exclusion is non-emittable.
 - **P4 repeat-discipline** (`oracle.n-replicate`) — any stochastic gate is computed
   at N≥`oracle-replicate-N` (frontload-tunable, default 3, alongside quiet-signal-N
-  / stuck-attempt-N) as a pass-rate, or stamped `provisional:N=1` and barred above
-  `pending-needs-cross-seed`; judge temperature pinned to 0 or majority-vote. A
-  single-seed binary stamped as a measured gap is non-emittable.
+  / stuck-attempt-N) as a pass-rate; a single seed (N=1) is `provisional` evidence
+  that does not pay `oracle.n-replicate`, so `claim_scope` stays `search_only`
+  (the candidate keeps its earned lifecycle status). Judge temperature pinned to 0
+  or majority-vote. A single-seed binary stamped as a measured gap is non-emittable.
 - **P5 expected-red control** (`oracle.expected-red`) — `BENCHMARK` binds ≥1
   expected-red and ≥1 expected-green control that run every iteration; a run whose
   expected-red scores green sets `eval_health: gamed` and checkpoints with
