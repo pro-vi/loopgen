@@ -50,6 +50,4 @@ raises ceilings; the loop proposes, the user disposes.
 - Uses research → preloop → bootstrap → iter phase gates, each with
   `owner: loop | user | external`; user-owned gates cannot be flipped by the
   loop.
-- Body template: `templates/bodies/greenfield-body.md` (the one body
-  reconstructed rather than copied from a legacy template). Greenfield is the
-  least battle-tested of the four archetypes; read its first emissions closely.
+- Body template: `templates/bodies/greenfield-body.md`.

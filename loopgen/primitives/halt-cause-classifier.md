@@ -3,8 +3,7 @@
 ## Purpose
 
 When the loop emits `stop-and-summarize` or `escalate: <reason>`, it labels the
-cause so the user — and the next derivation pass — can route it back. Unifies
-the four legacy classifiers.
+cause so the user — and the next derivation pass — can route it back.
 
 ## Include when
 

@@ -42,9 +42,7 @@ For each checklist item, do exactly one of:
    separately** so a cap is never silently insufficient. A loop that can spend
    unattended without all six is not emittable. For a single *bounded* paid action
    a one-line authorized-or-defer rule suffices; free-only loops emit no budget
-   section. (Dogfooding: mdtools hybrid-pareto `/goal` loop, 2026-05-29 — a "soft
-   budget" `gaps_flagged` line let the loop block on `AskUserQuestion` at the first
-   paid frontier sweep; resolved into its `## Budget policy`.)
+   section.
 
 ## Universal checklist (shared by all archetypes)
 

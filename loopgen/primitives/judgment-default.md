@@ -15,10 +15,6 @@ environment would consult programmatically) and with `halt-cause-classifier`
 
 **Placeholders.** None — substituted verbatim.
 
-**Source of truth.** Byte-identical to the `## Judgment default` block in the
-retired `frontier-loop` / `goal-loop` / `story-loop` prompt templates
-(verified at hoist time). After retirement, this file is canonical.
-
 ---
 
 ## Judgment default

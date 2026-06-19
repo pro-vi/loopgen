@@ -2,9 +2,8 @@
 
 ## Purpose
 
-The common shape of the four legacy Diagnostic / Retrofit modes, plus a loopgen
-addition. Used by `SKILL.md` Diagnostic mode to retrofit a **drifting** loop —
-not to author a new one.
+Used by `SKILL.md` Diagnostic mode to retrofit a **drifting** loop — not to
+author a new one.
 
 ## Include when
 

@@ -14,13 +14,8 @@ extracting primitive values, composes the prompt by combining those values
 (defaulting to the nearest archetype's presets and diverging where the task
 demands), and emits with a provenance preamble.
 
-It replaces the four legacy loop skills, whose irreducible cores now live as
-archetype reference documents (`archetypes/*.md`) and whose shared
-infrastructure is the primitive vocabulary (`primitives/*.md`). Output is
-backward-compatible under the U11 probe: a pure archetype reproduces the legacy
-skill's prompt plus the accepted contract deltas (provenance, frontload,
-canonical artifact/state references, and frontier pressure accounting where
-applicable).
+Each archetype's irreducible core lives in `archetypes/*.md`; its shared
+infrastructure is the primitive vocabulary in `primitives/*.md`.
 
 Invoke **once per run** to author or revise a prompt; the loop's per-iteration
 playbook lives in the composed `loop/PROMPT.md`, not here. Invoke in
@@ -417,5 +412,4 @@ write a ⚠️ block to `loop/STATE.md`.
   — the four emittable archetype bodies.
 - `references/oracle-principles.md` (goal), `references/review-closure-overlay.md`
   + `references/same-family-drift.md` (frontier),
-  `references/greenfield-invariants.md` (greenfield),
-  `references/backward-compat-tests.md` (the U11 probe).
+  `references/greenfield-invariants.md` (greenfield).

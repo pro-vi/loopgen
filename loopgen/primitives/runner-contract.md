@@ -10,10 +10,6 @@ This block is universal.
 
 **Placeholders.** None — substituted verbatim.
 
-**Source of truth.** Byte-identical to the `## Runner contract` block in the
-retired `frontier-loop` / `goal-loop` / `story-loop` prompt templates
-(verified at hoist time). After retirement, this file is canonical.
-
 **Idempotency corollary (authoring guidance — not part of the inlined block).**
 Because the runner re-invokes the *same* prompt every iteration, the emitted
 prompt must be safe to re-run from any state: all first-iteration / bootstrap /
@@ -23,10 +19,6 @@ run "first". The **kick-off** invocation the operator pastes into the runner mus
 likewise be iteration-agnostic (a pointer to the prompt, no "begin with…" step) —
 it is re-sent unchanged each iteration. Canonical self-gate shape: story-body's
 `## Bootstrap mode`. See SKILL.md Phase 4 → "The kick-off (runner invocation)".
-Dogfooding citation: mdtools hybrid-pareto goal loop (2026-05-29) — a kick-off
-that said "begin with its First-iteration bootstrap" would have re-run inventory
-instantiation on iteration 2; fix was to gate the bootstrap on `iteration: 0`
-inside `PROMPT.md` and reduce the kick-off to a stable pointer.
 
 **Unattended corollary (authoring guidance).** When the loop runs UNATTENDED (the
 default for `/goal`, cron-style runs, `cadence-shape: deferred-fire-and-forget`),
@@ -38,9 +30,7 @@ irreversible → `stop-and-summarize` with the right halt label and the question
 the summary (async, never interactive). A **context-scoped** ban is not enough —
 forbidding interactive prompts only for cost leaves the tool reachable for the
 next decision ("which cell?", "ambiguous oracle?"). Make it global, at the
-runner-contract level. Dogfooding: mdtools hybrid-pareto loop (2026-05-29) — a
-cost-only "don't ask" rule still left `AskUserQuestion` reachable; the loop
-blocked on it at the first paid step.
+runner-contract level.
 
 **Commit corollary (authoring guidance).** Loopgen prompts authorize unattended
 local commits by default. Every accepted iteration that changes tracked files

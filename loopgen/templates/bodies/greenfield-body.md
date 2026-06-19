@@ -1,8 +1,7 @@
 # Greenfield Prompt Body (archetype body template)
 
-The emittable body for a green-field discovery loop — the one archetype with no
-legacy prompt template, reconstructed from `greenfield-loop`'s emit procedure +
-the 11 invariants. `/loopgen` (Phase 3) fills the `{{placeholders}}`, resolves
+The emittable body for a green-field discovery loop. `/loopgen` (Phase 3) fills
+the `{{placeholders}}`, resolves
 the `{{INCLUDE …}}` markers by inlining the named block, and drops conditional
 sections that do not apply. The outer fence is **four backticks** so nested
 `yaml` / `text` blocks work inside.

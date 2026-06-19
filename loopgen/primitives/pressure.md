@@ -52,7 +52,7 @@ when the gate holds; else stripped. The active rows themselves live in
 ## Authoring guidance (not emitted)
 
 - **Gate.** Populate `{{PRESSURE_SURFACE}}` iff `count(pressure_objects) ≥ 1` at
-  compose. This keeps zero-pressure pure archetypes byte-identical (U11).
+  compose; otherwise it is stripped, so a zero-pressure compose has no pressure section.
 - **Compaction survival.** The *pointer* ("re-read `loop/PRESSURE.md` each
   pass") must sit in the durable prompt — it rides the runner's user-role
   continuation, which survives Codex compaction verbatim while the assistant

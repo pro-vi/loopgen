@@ -8,16 +8,14 @@ contract has been satisfied. It assembles from three inputs:
 2. the shared **primitive blocks** — `primitives/*.md`,
 3. the classified **primitive bundle + divergences** from Phase 2.
 
-The body templates are legacy-derived emittable prompts (frontier / goal /
-story from the retired loop skills; greenfield reconstructed). This skeleton
-defines the union section order, the provenance/frontload contract, and the
-patch/degrade/strip logic that turns a body template into a composed prompt.
+This skeleton defines the union section order, the provenance/frontload
+contract, and the patch/degrade/strip logic that turns a body template into a
+composed prompt.
 
 ## Section order (union of all archetype bodies)
 
 1. **Header line** — archetype-specific ("You are running …").
-2. **Provenance preamble** — ALWAYS via `{{PROVENANCE}}` (format below). NEW;
-   the one section the legacy skills never emitted.
+2. **Provenance preamble** — ALWAYS via `{{PROVENANCE}}` (format below).
 3. **Motive** — ALWAYS.
 4. **Runner contract** — ALWAYS (`primitives/runner-contract.md`).
 5. **Judgment default** — ALWAYS (`primitives/judgment-default.md`); in
@@ -41,8 +39,10 @@ patch/degrade/strip logic that turns a body template into a composed prompt.
 8. **Signal hierarchy** — `primitives/evidence-tier.md`. Carried by the
    `frontier` / `story` / `greenfield` bodies; **not** `goal` (which relies on
    oracle principles + the acceptance inventory as its evidence surface). Do
-   not add a standalone Signal-hierarchy section to a `goal` prompt — the legacy
-   goal prompt never had one, and adding it breaks U11.
+   not add a standalone Signal-hierarchy section to a `goal` prompt — `goal`
+   relies on oracle principles + the acceptance inventory as its evidence
+   surface, so the section is wrong for a finite checklist, not part of goal's
+   contract.
 9. **Iteration protocol** — archetype body.
 10. **Rules** — archetype body (scope manifest, closure discipline FIXED≠CLOSED,
     status-theater prohibition, forbidden shortcuts; `frontier` adds same-family
@@ -60,9 +60,10 @@ patch/degrade/strip logic that turns a body template into a composed prompt.
 list is the *superset* across archetypes; a section appears in a composed prompt
 only if that archetype's body carries it. A shared block already inlined in a
 body is **not** re-emitted from its primitive file (no double-emission), and the
-assembler never adds a section the archetype's legacy body lacked except for
-the explicit U11 compatibility deltas: provenance, frontload, canonical
-artifact/state references, and the shared frontier pressure-accounting block.
+assembler is **additive-minimal**: it never adds a section the archetype's body
+lacks except the minimal cross-archetype additions — provenance, frontload,
+canonical artifact/state references, and the shared frontier pressure-accounting
+block.
 
 ## Provenance preamble (ALWAYS — emit with values filled)
 
@@ -165,18 +166,9 @@ is invisible — the preamble MUST enumerate every divergence axis + its source.
    files + nearest archetype files + divergent primitive add-ons + active
    overlay files.
 
-## Backward-compatibility invariant (U11 gate)
-
-For a **pure** archetype (no divergences; no conditional overlay active beyond
-detected consult degradation), the assembly procedure reproduces the legacy
-skill's body except for the accepted compatibility deltas. The U11 probe diffs
-composed output against the legacy reference and accepts only: (a) the
-provenance preamble, (b) the frontload preamble, (c) canonical artifact/state
-contract references, (d) the shared pressure-accounting block for pure frontier
-only, and (e) cosmetic whitespace/ordering. Any other load-bearing structural
-difference on a pure case fails the probe.
+## Pressure-surface gating
 
 The `{{PRESSURE_SURFACE}}` block is gated on ≥1 compose-time pressure object: a
-pure case with no seeded or mined pressure has it stripped, so it is **absent**
-(not a delta) and byte-identity holds. A case that intentionally seeds pressure
-is not a pure case and is tested separately.
+pure case with no seeded or mined pressure has it stripped (step 8), so a
+zero-pressure compose carries no pressure section. A case that intentionally
+seeds pressure is not a pure case.
