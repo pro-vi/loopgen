@@ -86,6 +86,17 @@ For each checklist item, do exactly one of:
   A loop with no bound oracle-object, or one over a deterministic non-LLM oracle,
   runs no audit and emits no integrity lines — the preamble is unchanged.
 - **Parameters / thresholds** — quiet-signal N, stuck-attempt N, cash-out N.
+- **Horizon & context sizing** — estimate the run horizon (iterations / wall-clock
+  to the target) and the working context each iteration must hold, *against the
+  evaluator's strength*. When the horizon is long or the context is large relative
+  to a weak / immature evaluator, **recommend a sub-goal split** in the frontload
+  preamble — decompose into checkpointed milestones, each independently verifiable
+  — because long-horizon drift compounds when the grading signal is thin. This is
+  compose-time **judgment, not a hard threshold**: when horizon and evaluator are
+  well-matched, surface nothing (the preamble is byte-identical). It sizes a
+  *context window*, so it is distinct from — and never folded into — the metered-$
+  `## Budget policy` block (procedure step 4), which governs paid + irreversible
+  resources.
 - **Metered/irreversible resources** — any paid tier or quota the loop consumes
   repeatedly while unattended (paid-API $, cloud compute, rate-limited quota). If
   present, resolve into a budget/quota policy (procedure step 4) — never a bare

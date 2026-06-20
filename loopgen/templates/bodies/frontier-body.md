@@ -355,6 +355,11 @@ substantive work on another axis, or deferred until a new finding
 surfaces. Noticing concentration and then discharging the requirement
 with a syntactic repair is an iteration to reject, not accept.
 
+**Restructure, don't retune.** When stuck, change the *constraint or
+environment* — the surface, the oracle, the decomposition — not the
+parameters of the same approach. Retuning the same family at a dead end is
+the cognitive-loop failure mode; same-family concentration is its signature.
+
 ### Frontier anchor requirement
 
 Every accepted change must cite a live frontier anchor:
