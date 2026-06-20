@@ -28,6 +28,8 @@ Your job is to improve the repository's evidence-backed frontier.
 
 {{PRESSURE_SURFACE}}
 
+{{SUBAGENT_PATTERNS}}
+
 ## Frontier vector
 
 This repository's evidence-backed frontier moves along these dimensions:
@@ -488,6 +490,9 @@ Placeholders populated during derivation (see SKILL.md step 6):
 - `{{FRONTLOAD_PREAMBLE}}` — resolved / defaulted / open-gap summary.
 - `{{PRESSURE_SURFACE}}` — the pressure weather block (`primitives/pressure.md`),
   emitted only when ≥1 pressure object exists at compose time; stripped otherwise.
+- `{{SUBAGENT_PATTERNS}}` — the subagent-pattern catalog B/C/D
+  (`primitives/subagent-patterns.md`), emitted only at `consult-tier ≥ 1` and
+  filtered to that tier; stripped byte-identical at tier-0.
 - `{{EVALUATOR_TIER}}` — current T0–T6 tier.
 - `{{RAMP_GUIDANCE}}` — one line. Omit if at or above T3.
 - `{{CHEAP_CHANNEL}}` / `{{EXPENSIVE_CHANNEL}}` — named commands or

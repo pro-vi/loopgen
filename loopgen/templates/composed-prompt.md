@@ -26,6 +26,11 @@ composed prompt.
    (`primitives/pressure.md`). Emitted right after the frontload preamble — the
    weather is read before the body — but **only when ≥1 pressure object exists**
    at compose time; otherwise stripped, leaving the prompt byte-identical.
+6b. **Subagent patterns** — CONDITIONAL via `{{SUBAGENT_PATTERNS}}`
+   (`primitives/subagent-patterns.md`). Emitted right after the pressure surface
+   — an available *capability* read before the body — but **only when
+   `consult-tier ≥ 1`**, filtered to the patterns that tier meets; at `tier-0` it
+   is stripped, leaving the prompt byte-identical. Carried by all four bodies.
 7. **Archetype body** — the nearest archetype's body, placeholders filled.
    Conditional sub-sections by archetype:
    - `frontier`: Frontier vector · Core law · Homeostasis (5 axes) · Evaluator
@@ -148,6 +153,18 @@ is invisible — the preamble MUST enumerate every divergence axis + its source.
    - The active rows live in `loop/PRESSURE.md` (re-read each pass), not inlined
      into the prompt; the emitted block carries the re-read contract, the mode
      law, and the backpressure instruction.
+7b. **Apply subagent patterns** (`primitives/subagent-patterns.md`):
+   - If `consult-tier ≥ 1`, replace `{{SUBAGENT_PATTERNS}}` with the block below
+     the `---` in `primitives/subagent-patterns.md`, keeping only the B/C/D rows
+     whose tier-gate the detected consult-tier meets (D at tier ≥ 1; B and C at
+     tier 3, or C wherever frontload binds a pollable job channel), and fill
+     `{{CONSULT_TIER}}`.
+   - Otherwise (`tier-0`) strip `{{SUBAGENT_PATTERNS}}` entirely (step 8 removes
+     it). The loop runs single-agent via pattern A — byte-identical, gated
+     exactly like `{{PRESSURE_SURFACE}}`.
+   - Pattern A (single-agent iteration) is the existing protocol; it is never
+     part of this block, and nothing here is a required gate to accept an
+     iteration.
 8. **Strip dead sections.** Remove any section whose `{{placeholder}}` was not
    substituted. If any `{{…}}` survives, WARN in the emit summary — the emitted
    prompt must contain no dead sections.

@@ -72,6 +72,10 @@ archetype-varying axis.
 (`cadence-shape ∈ {deferred-fire-and-forget, checkpoint-gated}`) or when the
 frontload `unattended` flag is set; interactive `sync` / `chapter` loops without
 the flag stay byte-identical (`primitives/lease-protocol.md`).
+`subagent-patterns` is likewise **gated**: its `{{SUBAGENT_PATTERNS}}` block
+(catalog B/C/D — pattern A is the existing single-agent protocol, never part of
+the block) emits only at `consult-tier ≥ 1`, filtered to that tier; at `tier-0`
+it is stripped byte-identical (`primitives/subagent-patterns.md`).
 
 **Forbidden divergences** (identity-breaking; never compose — route away):
 
@@ -136,7 +140,8 @@ benchmark-frontier overlay activates, read `primitives/benchmark-frontier.md`,
 `primitives/eval-ladder.md`, `references/benchmark-frontier-artifacts.md`, and
 `references/benchmark-frontier-example.md`. When the lease gate holds
 (`cadence-shape ∈ {deferred-fire-and-forget, checkpoint-gated}` or the frontload
-`unattended` flag), read `primitives/lease-protocol.md`.
+`unattended` flag), read `primitives/lease-protocol.md`. When `consult-tier ≥ 1`,
+read `primitives/subagent-patterns.md`.
 
 The provenance preamble's `Primitive sources:` line is the human-readable slice
 of this read set: it names the files whose values shaped or diverged from the
