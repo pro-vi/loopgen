@@ -120,6 +120,18 @@ A verifier you author must first **fail** (oracle principle #2). For each
 criterion, ask: *if this passes, does the user have a working feature?*
 If the answer requires inference, redesign the verifier (principle #3).
 
+### Provenance is not progress
+
+A commit, a diff, or a green command is **provenance — not progress, and not
+closure.** Commit-log narrative is the weakest signal: use it only as a
+**negative** anti-repetition signal, never as positive generative evidence for
+the next intervention; self-narrated recency re-certifies whatever shape
+dominated the window. So a bare commit does **not** move a criterion toward
+`PASS` and does **not** reset the `STUCK` counter (only criterion-specific
+`pass_evidence` above is new evidence). `FIXED ≠ CLOSED` (oracle principle #4):
+a passing per-criterion verifier is at most `PASS_PENDING_FINAL` until the
+final-verify proves the whole inventory in one repo state.
+
 ## Channels
 
 - **Cheap inner channel:** `{{CHEAP_CHANNEL}}` — run after edits, before
@@ -176,8 +188,17 @@ regression risk.
    hypothesis.
 9. If the criterion verifier passes, mark `PASS_PENDING_FINAL` — not
    `PASS`. `PASS` waits for the next final-verify.
-10. On `{{STUCK_ATTEMPT_N}}` consecutive failures with no new evidence,
-    mark the criterion `STUCK` and switch to another unblocked criterion.
+10. **Item-scoped replan (before `STUCK`, before `wrong-loop`).** When a
+    criterion resists the **same approach** twice, replan the *item* before
+    escalating: decompose it into smaller sub-criteria (legal only when no
+    obligation is dropped — see Acceptance row format) or change the
+    edit-surface / hypothesis class, not just retry the same hypothesis.
+    Exhaust item-scoped replanning before concluding the *whole loop* is the
+    wrong archetype (`wrong-loop`) — a single resistant item is a replan
+    trigger, not evidence the goal shape is wrong.
+11. On `{{STUCK_ATTEMPT_N}}` consecutive failures with no new evidence — after
+    an item-scoped replan failed to open a new approach — mark the criterion
+    `STUCK` and switch to another unblocked criterion.
 
 ## Oracle-drift guard
 
