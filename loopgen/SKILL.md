@@ -67,6 +67,11 @@ Consult tiers are defined below; benchmark-frontier is defined in
 pressure object exists at compose time (gated; byte-identical when empty).
 `pressure-accounting` is the `frontier` projection of `pressure`, not a separate
 archetype-varying axis.
+`lease-protocol` is a **gated** primitive (not universal): it emits
+`loop/LEASE.md` + the `lease:` STATE block only for the unattended cadences
+(`cadence-shape ∈ {deferred-fire-and-forget, checkpoint-gated}`) or when the
+frontload `unattended` flag is set; interactive `sync` / `chapter` loops without
+the flag stay byte-identical (`primitives/lease-protocol.md`).
 
 **Forbidden divergences** (identity-breaking; never compose — route away):
 
@@ -129,7 +134,9 @@ For frontier-shaped tasks, read `primitives/evaluator-maturity.md` and
 `primitives/pressure-accounting.md`. When benchmark language appears or the
 benchmark-frontier overlay activates, read `primitives/benchmark-frontier.md`,
 `primitives/eval-ladder.md`, `references/benchmark-frontier-artifacts.md`, and
-`references/benchmark-frontier-example.md`.
+`references/benchmark-frontier-example.md`. When the lease gate holds
+(`cadence-shape ∈ {deferred-fire-and-forget, checkpoint-gated}` or the frontload
+`unattended` flag), read `primitives/lease-protocol.md`.
 
 The provenance preamble's `Primitive sources:` line is the human-readable slice
 of this read set: it names the files whose values shaped or diverged from the
@@ -284,6 +291,17 @@ directories, performance reports, benchmark outputs, or generated artifacts.
 `pressure_ledger` — a checkpoint-level aggregate over those rows (not a
 field-for-field rename), rendered as a checkpoint contract.
 
+**Gated `loop/STATE.md` keys (unattended cadences only):**
+
+- `lease:` — `{run_id, runner_id, generation, iteration, iteration_started_at,
+  heartbeat_at, last_progress_at, expected_deadline, status}`, rendered to the
+  `loop/LEASE.md` projection each iteration. Present **only** when the lease gate
+  holds (`cadence-shape ∈ {deferred-fire-and-forget, checkpoint-gated}` or the
+  frontload `unattended` flag); stripped byte-identical otherwise. `heartbeat_at`
+  (liveness) and `last_progress_at` (stall detection) are deliberately separate
+  fields; `generation` is the CAS / fencing value. Spec:
+  `primitives/lease-protocol.md`.
+
 **Hybrid merge rule.** A hybrid is a union over **active contracts**, not a
 blind union over all contributing archetypes:
 
@@ -308,6 +326,12 @@ Important add-ons:
 - `overlay: benchmark-frontier` adds `loop/DOMAIN_SPEC.md`,
   `loop/BENCHMARK.md`, `loop/CANDIDATES.jsonl`, `loop/FRONTIER.json`, and
   `loop/traces/`.
+- `cadence-shape ∈ {deferred-fire-and-forget, checkpoint-gated}` (or the
+  frontload `unattended` flag) adds `loop/LEASE.md` + the gated `lease:` STATE
+  block (`primitives/lease-protocol.md`). frontier and greenfield are
+  `checkpoint-gated` by default, so they carry a lease by default; goal (`sync`)
+  and story (`chapter`) add neither unless the flag is set — byte-identical when
+  off.
 
 ## Phase 4 — Emit + surface decision
 
