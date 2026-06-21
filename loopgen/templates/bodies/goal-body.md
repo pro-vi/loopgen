@@ -172,7 +172,10 @@ regression risk.
    artifacts, and the source authority files. Confirm the goal version
    still matches the frozen inventory.
 2. **Oracle integrity check** before editing:
-   - criteria text unchanged except `status` / `last_verification`,
+   - criteria text unchanged except `status` / `last_verification`, **or**
+     additive child sub-criteria introduced by a recorded **Split Note** (step 10:
+     parent retained, every child + the parent verifier required, no obligation
+     dropped) — additive children of a recorded split are not drift,
    - verifiers unchanged except via approved Oracle Change Notes,
    - no skipped / xfailed selectors added,
    - no snapshot refreshed without a semantic assertion,
@@ -204,8 +207,10 @@ regression risk.
     rule — *the parent criterion stays; completion then requires every child **and**
     the parent-level verifier to pass; the split is illegal if it drops any
     obligation.* A legal split only **adds** sub-criteria — it never rewrites or
-    weakens the parent — so the oracle-integrity check (criteria text unchanged)
-    still holds; record the split in `loop/STATE.md`. Exhaust item-scoped
+    weakens the parent. Record it as a **Split Note** in `loop/STATE.md` (parent
+    id, child ids, and the no-obligation-dropped proof); step 2's oracle-integrity
+    check recognizes a recorded Split Note, so the additive children are **not**
+    read as drift / quarantine. Exhaust item-scoped
     replanning before concluding the *whole loop* is the wrong archetype
     (`wrong-loop`) — a single resistant item is a replan trigger, not evidence the
     goal shape is wrong.
