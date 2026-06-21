@@ -23,11 +23,12 @@ composed prompt.
 6. **Frontload preamble** — ALWAYS via `{{FRONTLOAD_PREAMBLE}}`
    (`primitives/frontload-audit.md` output).
 6a. **Liveness lease maintenance** — CONDITIONAL via `{{LEASE_MAINTENANCE}}`
-   (`primitives/lease-protocol.md`). Emitted **first, right after the frontload
-   preamble**, so the ownership check runs before any state-writing step — but
-   **only on the lease gate** (`cadence-shape ∈ {deferred-fire-and-forget,
-   checkpoint-gated}` or the frontload `unattended` flag); otherwise stripped,
-   leaving the prompt byte-identical. Carried by all four bodies.
+   (`primitives/lease-protocol.md`). Emitted **right after the frontload
+   preamble** — the loop stamps its liveness heartbeat at the start of the
+   iteration — but **only on the lease gate** (`cadence-shape ∈
+   {deferred-fire-and-forget, checkpoint-gated}` or the frontload `unattended`
+   flag); otherwise stripped, leaving the prompt byte-identical. Carried by all
+   four bodies.
 6b. **Pressure surface** — CONDITIONAL via `{{PRESSURE_SURFACE}}`
    (`primitives/pressure.md`). Emitted after the lease block — the weather is read
    before the body — but **only when ≥1 pressure object exists** at compose time;
@@ -151,15 +152,14 @@ is invisible — the preamble MUST enumerate every divergence axis + its source.
 7a. **Apply liveness lease maintenance** (`primitives/lease-protocol.md`):
    - If the lease gate holds (`cadence-shape ∈ {deferred-fire-and-forget,
      checkpoint-gated}` or the frontload `unattended` flag), replace
-     `{{LEASE_MAINTENANCE}}` with the `## Liveness lease (do this first …)` block
-     below the second `---` in `primitives/lease-protocol.md` (emitted **first**,
-     before pressure, so the ownership check precedes any state write); record the
-     `ttl` / `restart_cap` config in the frontload preamble; and **on the file
-     surface only** (skip on a chat-only / dry-run derivation — Phase 4) add
-     `loop/LEASE.md` to the target repo's `.gitignore` if absent (`/loopgen` adds
-     it at emit; the lease bootstrap defensively re-ensures it via idempotent
-     `git check-ignore`, so neither double-appends). The owner record is the git
-     ref `refs/loopgen/lease` — there is **no** `loop/STATE.md` `lease:` block.
+     `{{LEASE_MAINTENANCE}}` with the `## Liveness lease (stamp at the start …)`
+     block below the second `---` in `primitives/lease-protocol.md`; record the
+     `ttl` config in the frontload preamble; and **on the file surface only**
+     (skip on a chat-only / dry-run derivation — Phase 4) add `loop/LEASE.md` to
+     the target repo's `.gitignore` if absent (`/loopgen` adds it at emit; the loop
+     re-ensures it idempotently via `git check-ignore`). The shipped lease carries
+     **no `loop/STATE.md` keys and no owner/ownership state** — safe restart is the
+     deferred watchdog's job.
    - Otherwise strip `{{LEASE_MAINTENANCE}}` entirely (step 8 removes it) and emit
      neither `loop/LEASE.md` nor any `unattended` provenance token —
      byte-identical, gated exactly like `{{PRESSURE_SURFACE}}`.

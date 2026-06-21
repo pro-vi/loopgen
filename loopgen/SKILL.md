@@ -68,11 +68,10 @@ pressure object exists at compose time (gated; byte-identical when empty).
 `pressure-accounting` is the `frontier` projection of `pressure`, not a separate
 archetype-varying axis.
 `lease-protocol` is a **gated** primitive (not universal): it emits the untracked
-`loop/LEASE.md`, the owner-record git ref `refs/loopgen/lease`, and the
-`{{LEASE_MAINTENANCE}}` first-step prompt-section only for the unattended cadences
-(`cadence-shape ∈ {deferred-fire-and-forget, checkpoint-gated}`) or when the
-frontload `unattended` flag is set; interactive `sync` / `chapter` loops without
-the flag stay byte-identical (`primitives/lease-protocol.md`).
+`loop/LEASE.md` and the `{{LEASE_MAINTENANCE}}` stamp prompt-section only for the
+unattended cadences (`cadence-shape ∈ {deferred-fire-and-forget, checkpoint-gated}`)
+or when the frontload `unattended` flag is set; interactive `sync` / `chapter`
+loops without the flag stay byte-identical (`primitives/lease-protocol.md`).
 `subagent-patterns` is likewise **gated**: its `{{SUBAGENT_PATTERNS}}` block
 (catalog B/C/D — pattern A is the existing single-agent protocol, never part of
 the block) emits only at `consult-tier ≥ 1`, filtered to that tier; at `tier-0`
@@ -298,18 +297,19 @@ directories, performance reports, benchmark outputs, or generated artifacts.
 field-for-field rename), rendered as a checkpoint contract.
 
 **Gated lease surfaces (unattended cadences only) — no `loop/STATE.md` keys.**
-The lease adds **no** `loop/STATE.md` block. Its owner record is the
-rollback-immune git ref `refs/loopgen/lease` (a blob `{generation, owner_id,
-run_id, restart_count, acquired_at}`, the CAS anchor); its liveness surface is the
-**untracked** `loop/LEASE.md` (`{generation, owner_id, iteration,
+The lease adds **no** `loop/STATE.md` block and **no ownership state**. Its only
+shipped surface is the **untracked** `loop/LEASE.md` (`{iteration,
 iteration_started_at, expected_deadline, status}`, rewritten atomically each
-iteration start, `generation` echoing the record so a superseded render is
-discardable); its `ttl` / `restart_cap` config is read-only in the frontload
-preamble. Liveness is the **advancing `expected_deadline`** (no heartbeat field) —
-the running loop bootstraps / confirms / stamps, while takeover is the deferred
-watchdog's job. Present **only** when the lease gate holds (`cadence-shape ∈
-{deferred-fire-and-forget, checkpoint-gated}` or the frontload `unattended`
-flag); stripped byte-identical otherwise. Spec: `primitives/lease-protocol.md`.
+iteration start); its `ttl` is read-only config in the frontload preamble.
+Liveness is the **advancing `expected_deadline`** (no heartbeat field), detected
+by an external observer — the running loop only keeps the file fresh; it carries
+no `owner_id` / generation / ref, so it is safe under `/goal`'s file-only
+re-invocation. Safe automated *restart* (mutual exclusion, ownership, identity,
+ref lifecycle) is the **deferred watchdog's** job, with its open problems named
+in the spec — not built into the loop. Present **only** when the lease gate holds
+(`cadence-shape ∈ {deferred-fire-and-forget, checkpoint-gated}` or the frontload
+`unattended` flag); stripped byte-identical otherwise. Spec:
+`primitives/lease-protocol.md`.
 
 **Hybrid merge rule.** A hybrid is a union over **active contracts**, not a
 blind union over all contributing archetypes:
@@ -337,12 +337,11 @@ Important add-ons:
   `loop/traces/`.
 - `cadence-shape ∈ {deferred-fire-and-forget, checkpoint-gated}` (or the
   frontload `unattended` flag) adds the **untracked** `loop/LEASE.md` (gitignored
-  volatile liveness surface), the owner-record git ref `refs/loopgen/lease`, the
-  gated `{{LEASE_MAINTENANCE}}` prompt-section, and `ttl` / `restart_cap` config in
-  the frontload preamble — **no `loop/STATE.md` `lease:` block**
-  (`primitives/lease-protocol.md`). frontier and greenfield are `checkpoint-gated`
-  by default, so they carry a lease by default; goal (`sync`) and story
-  (`chapter`) add none unless the flag is set — byte-identical when off.
+  liveness surface), the gated `{{LEASE_MAINTENANCE}}` stamp prompt-section, and
+  `ttl` config in the frontload preamble — **no `loop/STATE.md` keys and no
+  ownership state** (`primitives/lease-protocol.md`). frontier and greenfield are
+  `checkpoint-gated` by default, so they carry a lease by default; goal (`sync`)
+  and story (`chapter`) add none unless the flag is set — byte-identical when off.
 
 ## Phase 4 — Emit + surface decision
 
