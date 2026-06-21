@@ -172,14 +172,8 @@ regression risk.
    artifacts, and the source authority files. Confirm the goal version
    still matches the frozen inventory.
 2. **Oracle integrity check** before editing:
-   - criteria text unchanged except `status` / `last_verification`, **or**
-     additive child sub-criteria introduced by a recorded **Split Note** (step 10:
-     parent retained, every child + the parent verifier required, no obligation
-     dropped) — additive children of a recorded split are not drift,
-   - verifiers unchanged except via approved Oracle Change Notes, **or** the new
-     child verifiers a recorded Split Note introduces (a new child row brings its
-     own verifier — that is a new verifier for a new row, not a change to an
-     existing one),
+   - criteria text unchanged except `status` / `last_verification`,
+   - verifiers unchanged except via approved Oracle Change Notes,
    - no skipped / xfailed selectors added,
    - no snapshot refreshed without a semantic assertion,
    - no expected evidence weakened.
@@ -190,7 +184,8 @@ regression risk.
 4. Otherwise pick one primary failing / `OPEN` criterion by topology +
    priority + cheapest verifier feedback. If every remaining unpassed
    criterion is `STUCK` / `BLOCKED_EXTERNAL` / `QUARANTINED` / wrong-loop-
-   shaped, go to halt classification.
+   shaped — **and any wrong-loop-shaped item has already been item-scoped-
+   replanned without success (step 10)** — go to halt classification.
 5. Before editing, write one line:
    `criterion-id | failing-evidence | hypothesis | edit-surface | rollback`.
 6. Make one small reversible change. Run the cheap inner channel; if it
@@ -205,19 +200,13 @@ regression risk.
    `PASS`. `PASS` waits for the next final-verify.
 10. **Item-scoped replan (before `STUCK`, before `wrong-loop`).** When a
     criterion resists the **same approach** twice, replan the *item* before
-    escalating: either change the edit-surface / hypothesis class (not just retry
-    the same hypothesis), or **decompose** it into sub-criteria under this split
-    rule — *the parent criterion stays; completion then requires every child **and**
-    the parent-level verifier to pass; the split is illegal if it drops any
-    obligation.* A legal split only **adds** sub-criteria — it never rewrites or
-    weakens the parent. Record it as a **Split Note** in `loop/STATE.md` (parent
-    id, child ids **and their verifiers**, and the no-obligation-dropped proof);
-    step 2's oracle-integrity
-    check recognizes a recorded Split Note, so the additive children are **not**
-    read as drift / quarantine. Exhaust item-scoped
-    replanning before concluding the *whole loop* is the wrong archetype
-    (`wrong-loop`) — a single resistant item is a replan trigger, not evidence the
-    goal shape is wrong.
+    escalating: change the **edit-surface or hypothesis class** — a different fix
+    strategy for the *same* criterion, not just a retry of the same hypothesis. (Do
+    **not** rewrite or split the frozen criterion in-run: changing the acceptance
+    inventory would force re-deriving a new `goal_version` — decomposition is a
+    re-derivation concern, not an in-run move.) Exhaust item-scoped replanning
+    before concluding the *whole loop* is the wrong archetype (`wrong-loop`) — a
+    single resistant item is a replan trigger, not evidence the goal shape is wrong.
 11. On `{{STUCK_ATTEMPT_N}}` consecutive failures with no new evidence — after
     an item-scoped replan failed to open a new approach — mark the criterion
     `STUCK` and switch to another unblocked criterion.
