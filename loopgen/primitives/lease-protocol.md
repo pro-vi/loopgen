@@ -162,9 +162,11 @@ iterations:
    `iteration_started_at`, `expected_deadline` (= `iteration_started_at + ttl`),
    `status: running`. `loop/LEASE.md` is untracked, so this never dirties tracked
    state. (Defensively ensure it is gitignored first:
-   `git check-ignore -q loop/LEASE.md || printf '\nloop/LEASE.md\n' >> .gitignore`
-   — the leading `\n` keeps the entry on its own line even when `.gitignore` has no
-   trailing newline, so the path is actually ignored.)
+   `grep -qxF 'loop/LEASE.md' .gitignore 2>/dev/null || printf '\nloop/LEASE.md\n' >> .gitignore`
+   — grep the **tracked** `.gitignore` (not `git check-ignore`, which also matches
+   personal / `.git/info/exclude` rules and would skip adding the *portable*
+   versioned entry); the leading `\n` keeps the entry on its own line even when
+   `.gitignore` lacks a trailing newline.)
 2. **On a clean stop**, set `status: checkpointed` (checkpoint boundary) or
    `paused-external` (explicit external pause) so an observer reads idle/done, not
    hung.
