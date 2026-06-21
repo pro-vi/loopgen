@@ -176,7 +176,10 @@ regression risk.
      additive child sub-criteria introduced by a recorded **Split Note** (step 10:
      parent retained, every child + the parent verifier required, no obligation
      dropped) — additive children of a recorded split are not drift,
-   - verifiers unchanged except via approved Oracle Change Notes,
+   - verifiers unchanged except via approved Oracle Change Notes, **or** the new
+     child verifiers a recorded Split Note introduces (a new child row brings its
+     own verifier — that is a new verifier for a new row, not a change to an
+     existing one),
    - no skipped / xfailed selectors added,
    - no snapshot refreshed without a semantic assertion,
    - no expected evidence weakened.
@@ -208,7 +211,8 @@ regression risk.
     the parent-level verifier to pass; the split is illegal if it drops any
     obligation.* A legal split only **adds** sub-criteria — it never rewrites or
     weakens the parent. Record it as a **Split Note** in `loop/STATE.md` (parent
-    id, child ids, and the no-obligation-dropped proof); step 2's oracle-integrity
+    id, child ids **and their verifiers**, and the no-obligation-dropped proof);
+    step 2's oracle-integrity
     check recognizes a recorded Split Note, so the additive children are **not**
     read as drift / quarantine. Exhaust item-scoped
     replanning before concluding the *whole loop* is the wrong archetype
