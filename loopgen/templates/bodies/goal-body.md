@@ -199,12 +199,16 @@ regression risk.
    `PASS`. `PASS` waits for the next final-verify.
 10. **Item-scoped replan (before `STUCK`, before `wrong-loop`).** When a
     criterion resists the **same approach** twice, replan the *item* before
-    escalating: decompose it into smaller sub-criteria (legal only when no
-    obligation is dropped — see Acceptance row format) or change the
-    edit-surface / hypothesis class, not just retry the same hypothesis.
-    Exhaust item-scoped replanning before concluding the *whole loop* is the
-    wrong archetype (`wrong-loop`) — a single resistant item is a replan
-    trigger, not evidence the goal shape is wrong.
+    escalating: either change the edit-surface / hypothesis class (not just retry
+    the same hypothesis), or **decompose** it into sub-criteria under this split
+    rule — *the parent criterion stays; completion then requires every child **and**
+    the parent-level verifier to pass; the split is illegal if it drops any
+    obligation.* A legal split only **adds** sub-criteria — it never rewrites or
+    weakens the parent — so the oracle-integrity check (criteria text unchanged)
+    still holds; record the split in `loop/STATE.md`. Exhaust item-scoped
+    replanning before concluding the *whole loop* is the wrong archetype
+    (`wrong-loop`) — a single resistant item is a replan trigger, not evidence the
+    goal shape is wrong.
 11. On `{{STUCK_ATTEMPT_N}}` consecutive failures with no new evidence — after
     an item-scoped replan failed to open a new approach — mark the criterion
     `STUCK` and switch to another unblocked criterion.
