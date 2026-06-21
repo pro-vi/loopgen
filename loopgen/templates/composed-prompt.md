@@ -142,7 +142,7 @@ is invisible — the preamble MUST enumerate every divergence axis + its source.
      generated/minted answer key, or eval-set evolution), seed the
      `### Oracle-integrity pressure` rows (`primitives/benchmark-frontier.md`) into
      `loop/STATE.md` `pressure_objects`, so `{{PRESSURE_SURFACE}}` fires via its own
-     ≥1-object gate (step 7a). The two gates **nest**: oracle-integrity rows are a
+     ≥1-object gate (step 7b). The two gates **nest**: oracle-integrity rows are a
      strict subset of overlay-active-and-oracle-trusted cases, so they never appear
      without the overlay block that explains them, and a pure archetype — or a
      benchmark overlay over a deterministic non-LLM, non-minted oracle — seeds none
