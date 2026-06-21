@@ -105,7 +105,13 @@ For each checklist item, do exactly one of:
   under `loop/STATE.md` `frontload.unattended` and name it in provenance **only
   when set** — like every other conditional frontload item (latent-pressure
   mining, horizon sizing), an unset flag surfaces nothing and stays
-  byte-identical; the default-off `sync` / `chapter` case emits no token.
+  byte-identical; the default-off `sync` / `chapter` case emits no token. When the
+  lease **is** active, also pick the lease **`ttl`** here in Phase 1 — the
+  per-iteration budget the runner uses for `expected_deadline =
+  iteration_started_at + ttl`; default conservative (e.g. 2h) and **must exceed
+  the longest legitimate iteration**. Selecting it in this phase puts a concrete
+  `ttl` in the frontload preamble *before* composition fills the preamble, so the
+  emitted lease block never references an unset budget.
 - **Metered/irreversible resources** — any paid tier or quota the loop consumes
   repeatedly while unattended (paid-API $, cloud compute, rate-limited quota). If
   present, resolve into a budget/quota policy (procedure step 4) — never a bare

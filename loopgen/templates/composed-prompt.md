@@ -153,8 +153,10 @@ is invisible — the preamble MUST enumerate every divergence axis + its source.
    - If the lease gate holds (`cadence-shape ∈ {deferred-fire-and-forget,
      checkpoint-gated}` or the frontload `unattended` flag), replace
      `{{LEASE_MAINTENANCE}}` with the `## Liveness lease (stamp at the start …)`
-     block below the second `---` in `primitives/lease-protocol.md`; record the
-     `ttl` config in the frontload preamble; and **on the file surface only**
+     block below the second `---` in `primitives/lease-protocol.md` (the lease
+     `ttl` is a **frontload item set in Phase 1**, so a concrete value is already
+     in the preamble by step 3 — step 7a does not set it); and **on the file
+     surface only**
      (skip on a chat-only / dry-run derivation — Phase 4) add `loop/LEASE.md` to
      the target repo's `.gitignore` if absent (`/loopgen` adds it at emit; the loop
      re-ensures it idempotently via `git check-ignore`). The shipped lease carries
