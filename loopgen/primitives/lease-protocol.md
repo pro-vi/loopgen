@@ -146,6 +146,18 @@ watchdog wrote in, resumes, while a stale or bootstrap-race-losing session stops
   different `owner_id` and a lower `generation`, so it reads superseded and stops.
   A successful `update-ref` *is* the acquisition; an optional re-read is a
   fast-fail, not a correctness requirement.
+  - **Feasibility requirement — launcher-assignable session ids.** The handoff
+    only works if the watchdog can fix the relaunched session's id *before* that
+    session's first Confirm: it mints `S'_id`, writes it into the record, **and
+    injects it into the relaunched session's environment** (the session reads its
+    id from there, not by self-minting). On a host where a session's id is **not**
+    launcher-assignable (it self-mints a fresh id per process), the watchdog cannot
+    pre-write a matching `owner_id` — a relaunch would self-mint a different id,
+    read superseded, and stop. There, takeover is **unavailable** and the lease
+    degrades to **liveness-detection only** (a hung loop is still observable; safe
+    automated hand-off is not). This is a named limitation of the deferred
+    watchdog, not a silent gap. (Bootstrap is unaffected: the bootstrapping session
+    has agency and self-mints both `owner_id` and `run_id`.)
 
 **Deferred to the watchdog implementation** (named, not falsely closed): *who*
 polls the lease and decides hung; the relaunch trigger; and the **crash-loop
@@ -199,14 +211,16 @@ Before the pressure weather and the numbered protocol — the very first thing e
 iteration — maintain the liveness lease. The **owner record** is the git ref
 `refs/loopgen/lease`, which points at a small blob; read it with
 `git cat-file -p $(git rev-parse refs/loopgen/lease)`. Your `owner_id` is the id
-this session runs under (bootstrap mints a fresh one; if a watchdog relaunched
-you, it wrote your id into the record when it took over).
+this session runs under — your runner/launcher provides it (a watchdog that
+relaunched you injects it and wrote the same id into the record); at bootstrap,
+with no launcher takeover, you self-mint a fresh one.
 
 1. **Establish / confirm ownership before doing any work.**
    - *Bootstrap* — only when `loop/STATE.md` shows `iteration: 0` (the canonical
      re-entrant gate) **and** `refs/loopgen/lease` does not exist: build the owner
-     record `{generation: 0, owner_id: self, run_id, restart_count: 0,
-     acquired_at: now}`, write it as a blob and capture the id, then create the ref
+     record `{generation: 0, owner_id: self, run_id: <fresh stable id you mint
+     now, survives takeovers>, restart_count: 0, acquired_at: now}`, write it as a
+     blob and capture the id, then create the ref
      with an all-zero expected-old (creation succeeds only if the ref is absent):
 
      ```sh
