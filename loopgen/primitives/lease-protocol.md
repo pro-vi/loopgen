@@ -139,14 +139,16 @@ expected_deadline: <ts>     # iteration_started_at + ttl — advancing this is t
 status: running             # running | checkpointed | paused-external
 ```
 
+## The `{{LEASE_MAINTENANCE}}` block (described here; emitted below the `---`)
+
+The region below the `---` fills `{{LEASE_MAINTENANCE}}` so the lease instruction
+reaches `loop/PROMPT.md` (the file the runner re-reads each iteration). Without it
+the lease would be inert — declared but never stamped. Gated and stripped like
+`{{PRESSURE_SURFACE}}`. The composer substitutes **everything below the `---`,
+beginning at `## Liveness lease`**; that region carries no placeholder of its own,
+so nothing leaks back into the emitted prompt.
+
 ---
-
-## {{LEASE_MAINTENANCE}} (prompt-section — injected into the iteration protocol)
-
-> Fills `{{LEASE_MAINTENANCE}}` so the lease instruction reaches `loop/PROMPT.md`
-> (the file the runner re-reads each iteration). Without it the lease would be
-> inert — declared but never stamped. Gated and stripped like
-> `{{PRESSURE_SURFACE}}`.
 
 ## Liveness lease (stamp at the start of every iteration)
 
