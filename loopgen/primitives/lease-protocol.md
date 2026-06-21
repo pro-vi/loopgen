@@ -5,12 +5,17 @@
 The one honest failure a loopgen prompt cannot currently survive: the loop
 **dying unobserved** — session death, a hang, a context overflow. It is silent
 *and* expensive (an unattended run burns the night doing nothing). An agent
-**cannot self-report its own death**: a `last_seen` it stamps and then hangs on
-looks healthy forever. Detecting it needs an *external* observer reading a
-file the dead loop is no longer updating. This primitive emits the **lease
-spec** that observer reads — a paper-reviewable contract, **not** a runtime
-binding. The watchdog implementation is deferred (Scope Boundaries); what ships
-here is the on-disk shape that makes an external restart *possible and safe*.
+**cannot self-report its own death**: a timestamp it writes and then hangs on
+looks healthy forever. Detecting it needs an *external* observer reading a file
+the dead loop is no longer updating. This primitive emits the **lease spec** that
+observer reads.
+
+**Scope (matches the plan's "watchdog deferred").** Two things are **normative
+and shipped here**: (1) the *liveness surface* the running loop maintains, and
+(2) the *owner record* that makes a future restart split-brain-safe. The
+*restarter / watchdog itself* — the process that detects a hung loop and
+relaunches it — is **deferred**; this spec gives it the on-disk state it needs
+and a recommended takeover mechanism, but the running loop never restarts itself.
 
 Recovery of *iteration state* is not this primitive's job — loopgen already
 commits per accepted iteration, so `git status` + `loop/STATE.md`
@@ -19,159 +24,217 @@ gap git can't: *is the process still alive, and who owns it.*
 
 ## Include when
 
-**Gated.** Emit `loop/LEASE.md` + the `lease:` `loop/STATE.md` block only for
-the unattended cadences — `cadence-shape ∈ {deferred-fire-and-forget,
-checkpoint-gated}` (both "run while you sleep, look periodically") — **or** when
-the frontload **`unattended`** opt-in flag is set (the override for an operator
-leaving a `sync` / `chapter` loop running overnight). loopgen has no
-attended/unattended axis; `cadence-shape` is the available signal and the
-frontload flag is the manual override.
+**Gated.** Emit `loop/LEASE.md` + the `{{LEASE_MAINTENANCE}}` prompt-section only
+for the unattended cadences — `cadence-shape ∈ {deferred-fire-and-forget,
+checkpoint-gated}` — **or** when the frontload **`unattended`** flag is set (the
+override for an operator leaving a `sync` / `chapter` loop running overnight;
+`frontload-audit.md` records it under `frontload.unattended` + provenance *only
+when set*). Interactive `sync` / `chapter` loops without the flag emit neither —
+stripped, **byte-identical** (the empty-gate stripping `pressure.md` /
+`subagent-patterns.md` use, including no provenance token when off).
 
-Interactive `sync` / `chapter` loops **without** the flag emit neither file —
-the artifact role and the `lease:` STATE block are both stripped, leaving the
-composition **byte-identical** (the same empty-gate stripping `pressure.md` and
-`benchmark-frontier.md` use). No unattended run, no lease.
+## Liveness = an advancing deadline (no separate heartbeat)
 
-## The lease schema
+A live loop proves it is moving by **advancing its own deadline**: each iteration
+start it rewrites `expected_deadline = now + ttl` in `loop/LEASE.md`. A dead loop
+stops advancing it, so eventually `now > expected_deadline` and it reads as
+**hung**. There is no separate heartbeat field — stamped once per iteration it
+would always equal `iteration_started_at` and add nothing; the moving deadline
+*is* the heartbeat. So `ttl` must exceed the longest *legitimate* iteration
+(default conservative, e.g. 2h; detection latency is therefore ≈ `ttl`). Whether
+the *work* advances is the separate, existing `signal-starvation` / quiet-signal
+stall concern — the lease does not track it.
 
-`loop/LEASE.md` is rendered from the `lease:` block in `loop/STATE.md` each
-iteration — **STATE is the source of truth**, LEASE is a projection you never
-trust independently (a torn write self-heals on the next re-render, exactly as
-`PRESSURE.md` does).
+## Two surfaces
+
+- **`refs/loopgen/lease` — the owner record** (a git blob the ref points to). The
+  single durable, **rollback-immune** source of truth for *who owns the loop* and
+  the crash-loop count. Read with `git cat-file -p $(git rev-parse
+  refs/loopgen/lease)`; written with `git hash-object -w` + a CAS
+  `git update-ref`. Survives a working-tree-only `git checkout` (refs are not in
+  the worktree), so identity never desyncs from a STATE rollback.
+- **`loop/LEASE.md` — the volatile liveness surface, UNTRACKED** (gitignored by
+  `/loopgen` at emit, composition step 7c). Rewritten in full **atomically** (temp
+  file + rename) every iteration start, so it is never torn and never a tracked
+  diff.
+
+Config (`ttl`, `restart_cap`) is read-only, set at frontload in `loop/PROMPT.md`;
+it is not a mutable store. There is no `lease:` block in `loop/STATE.md` — folding
+the count and identity into the rollback-immune owner blob is what closes the
+STATE-rollback desync.
+
+### Schema
+
+**Owner record** (the blob `refs/loopgen/lease` points to):
 
 ```yaml
-run_id:               # stable id for this loop instance (set once at bootstrap)
-runner_id:            # id of the current runner/session (changes on takeover)
-generation:           # monotonic int; the CAS / fencing value (see Acquisition)
-iteration:            # current iteration number
-iteration_started_at: # ts, set at step 0 of the iteration
-heartbeat_at:         # ts, stamped EVERY step 0 (the process is moving) — independent of progress
-last_progress_at:     # ts, advances ONLY on verified progress — feeds stall detection, NOT liveness
-expected_deadline:    # iteration_started_at + ttl
-status:               # running | checkpointed | paused-external
+generation:   <int>   # monotonic; the orderable CAS / fencing value
+owner_id:     <id>    # current owner/session; changes on takeover
+run_id:       <id>    # stable loop-instance id (survives takeovers)
+restart_count: <int>  # 0 at bootstrap; +1 atomically with each takeover CAS — a monotonic counter the watchdog reads for backoff
+acquired_at:  <ts>    # when this owner claimed the ref — bounds alive-pending
 ```
 
-`ttl` is the per-iteration budget: default conservative (e.g. 2h), or the
-context/horizon budget the frontload horizon-sizing item
-(`primitives/frontload-audit.md`) sets when present.
+**`loop/LEASE.md`** (volatile, untracked, atomic, rewritten every iteration
+start; echoes `generation` so the observer can discard a superseded render):
 
-**`heartbeat_at` vs `last_progress_at` are deliberately two fields.**
-`heartbeat_at` answers *"is the process moving?"* (stamped every step 0,
-unconditionally). `last_progress_at` answers *"is the work advancing?"* (stamped
-only on verified progress, an `evidence-tier.md` tier-1/2 signal). Collapsing
-them yields a loop that looks **dead while legitimately grinding** on one hard
-step, or **alive while hung** mid-rewrite. Liveness reads `heartbeat_at`; stall
-detection reads `last_progress_at`; they never cross.
-
-## Acquisition (split-brain safe — fencing alone is not)
-
-Mutual exclusion is an **atomic compare-and-swap on a single owner record**, not
-"higher token wins." Higher-token-wins is *not* mutual exclusion: two restarters
-can both read `generation` N, both write N+1, and neither ever observes a higher
-value — two live owners, split brain.
-
-**Normative mechanism:** the owner record is a git ref, claimed by CAS —
-
-```
-git update-ref refs/loopgen/lease <new-owner-blob> <expected-old-blob>
+```yaml
+generation: <int>            # echo of the OWNED generation (re-written every iteration)
+owner_id: <id>               # echo, for diagnostics
+iteration: <int>
+iteration_started_at: <ts>
+expected_deadline: <ts>      # iteration_started_at + ttl — advancing this IS the liveness signal
+status: running              # running | checkpointed | paused-external
 ```
 
-git refs do **native compare-and-swap**: the update fails atomically if the ref
-no longer holds `<expected-old-blob>`, so a stale owner's claim is rejected and
-there is **no lock to leak** (nothing to time out or force-unlock). The owner
-record holds `(generation, runner_id)`. A new owner:
+## Liveness computation (the observer — reviewable without the watchdog)
 
-1. reads the current ref → `(generation_old, runner_old)`;
-2. builds `(generation_old + 1, self)`;
-3. CAS-writes it with `<expected-old>` = the blob it just read;
-4. **re-reads the ref and aborts if it no longer owns it** — closing the
-   read-modify-write race where two racers' CAS both appear to succeed against
-   different observed olds.
+1. **Read the owner record.** `git cat-file -p $(git rev-parse refs/loopgen/lease)`
+   → `(generation_ref, owner_ref, acquired_at, …)`.
+2. **Read `loop/LEASE.md`** (atomic writes ⇒ never torn, and all fields are
+   rewritten together each iteration, so a parseable render is never internally
+   inconsistent):
+   - `LEASE.generation == generation_ref` → a current render; classify in step 3.
+   - missing, or `LEASE.generation < generation_ref` → the owner has not produced
+     a current render yet. **Bound it with `acquired_at`:** if
+     `now > acquired_at + ttl`, the owner died before its first stamp →
+     **stale-owner** (restart-eligible); otherwise **alive-pending** (recently
+     acquired — wait until `acquired_at + ttl`). This bound is what stops a death
+     in the just-acquired / pre-first-stamp window from hiding forever.
+3. **Classify the current render (first match wins):**
+   - **hung** — `status == running` AND `now > expected_deadline` (wins regardless
+     of recency; only an external actor can move it).
+   - **idle / done** — `status ∈ {checkpointed, paused-external}`.
+   - **alive** — otherwise (`now ≤ expected_deadline`).
 
-`generation` is then carried **downstream** as a fencing tag: any LEASE/STATE
-write stamped with a generation lower than the current owner's is **ignored** by
-a reader (a superseded runner's late write cannot corrupt the live owner's
-state). The fencing tag is a *staleness label*, **not** the mutual-exclusion
-mechanism — the CAS is.
+## What the running loop does (normative — see {{LEASE_MAINTENANCE}})
 
-*(A plain `O_EXCL` lockfile is a future, runner-specific alternative. It would
-need its own stale-owner-removal rule and its own late-writer race rule — both
-of which the git-ref CAS avoids by construction. Do not adopt it without those
-two rules written down.)*
+The running loop never restarts itself. Each iteration it **bootstraps or
+confirms** ownership, **stamps** liveness, and **re-checks** ownership before
+committing. The full procedure is the emitted `{{LEASE_MAINTENANCE}}` block below.
+Confirm is the key safety step: if the owner record's `owner_id` is no longer this
+session's id, a restarter has taken over → the loop **stops without writing**.
 
-## Liveness computation (worked example — reviewable without the watchdog)
+## Ownership & restart — recommended mechanism (the restarter is deferred)
 
-An observer reads `loop/LEASE.md` and classifies it in this **precedence
-order** (first match wins):
+Mutual exclusion is an **atomic compare-and-swap on the `refs/loopgen/lease`
+object id**: `git update-ref refs/loopgen/lease <new-blob> <expected-old-blob>`
+swaps atomically only if the ref still holds `<expected-old-blob>` (the id last
+read via `git rev-parse`). git refs do native CAS on object ids, so a stale claim
+fails atomically (non-zero exit) and there is no lock to leak. `generation` (read
+from the blob *content*) is the orderable fencing tag — the **observer** uses it
+to discard a stale `loop/LEASE.md` render, and it doubles as the monotonic
+takeover counter. A **session's** own ownership check is simpler: its session id
+== the record's `owner_id` (so a watchdog-relaunched session, whose id the
+watchdog wrote in, resumes, while a stale or bootstrap-race-losing session stops).
 
-1. **hung** — `status == running` AND `now > expected_deadline`. *Wins
-   regardless of recent progress*: the iteration started, blew its deadline, and
-   only an external actor can move it. (Note: a fresh `heartbeat_at` does **not**
-   rescue a deadline-blown `running` lease — a process can heartbeat-stamp and
-   still be wedged past its budget.)
-2. **idle / done** — `status ∈ {checkpointed, paused-external}`. Not a failure;
-   the loop stopped on purpose (a checkpoint boundary, or an explicit external
-   pause). No restart.
-3. **alive** — otherwise: `heartbeat_at` is fresh within `ttl`. Working
-   normally; leave it.
+- **Bootstrap** — self-gated on `loop/STATE.md` `iteration: 0` (the canonical
+  re-entrant gate, SKILL.md Phase 4), **not** ref existence. Write the owner blob
+  `{generation: 0, owner_id: self, run_id, restart_count: 0, acquired_at: now}`
+  and create the ref with an all-zero expected-old
+  (`git update-ref … 0000…0`), which succeeds **iff the ref is absent**. If the
+  create CAS loses (a racer won, or the ref survived a STATE rollback), re-read
+  and *confirm* / defer to the restarter — do not re-bootstrap.
+- **Takeover (the restarter's action — deferred watchdog).** Only when the loop
+  reads **hung** or **stale-owner**. Write a *single* new blob
+  `{generation: gen_ref + 1, owner_id: <relaunched session's id>, run_id,
+  restart_count: <old> + 1, acquired_at: now}` and CAS it in. **The incremented
+  `restart_count` rides the same blob as the new `generation`**, so they advance
+  atomically — a crash right after the CAS leaves both advanced (no counter
+  freeze, no desync). `owner_id` must be the **relaunched session's** id, so that
+  session's Confirm matches and resumes; a stale superseded session has a
+  different `owner_id` and a lower `generation`, so it reads superseded and stops.
+  A successful `update-ref` *is* the acquisition; an optional re-read is a
+  fast-fail, not a correctness requirement.
 
-`last_progress_at` is **not consulted** for liveness — it feeds stall detection
-(`signal-starvation` / quiet-signal), a separate concern. A restarter acts
-**only on `hung`**, and only after the restart preconditions below.
-
-## Restart preconditions (an external restarter verifies all before relaunching)
-
-1. `loop/LEASE.md` is present and parseable.
-2. `now > expected_deadline`.
-3. `status == running`.
-4. the worktree is committed-or-recovery-checkpointed — **no silent in-flight
-   diff** (loopgen commits per accepted iteration, so a dirty tree means a
-   crash mid-iteration; recover or revert it first, never relaunch over it).
-5. it **wins the owner-record CAS** — no live owner holds a higher
-   `generation` (this is what makes the restart split-brain-safe).
-6. the restart count is under a cap (a crash-looping run is a `derivation-gap`
-   to surface, not to relaunch forever).
+**Deferred to the watchdog implementation** (named, not falsely closed): *who*
+polls the lease and decides hung; the relaunch trigger; and the **crash-loop
+backoff** — `restart_count` is a monotonic takeover counter the watchdog reads
+(with `acquired_at`) to decide when to stop relaunching (e.g. against a
+frontload-set `restart_cap`, with whatever reset-on-progress heuristic it
+chooses); recovery when a bootstrap create-CAS is lost. The lease exposes the
+state these need; the restart *policy* is out of scope here — the running loop
+never enforces a cap or resets the counter.
 
 ## Recovery stays git (iteration-state only)
 
 On resume, `git status` + `loop/STATE.md` (`last_action` / `next_action`) is the
 truth. **No `pending_op`, no precondition-sha, no ACID journal for iteration
-state** — a dirty worktree is visible and revertable, and commit-per-iteration
-already bounds the loss to one iteration.
-
-**Carve-out:** the metered-**spend** write-ahead ledger
-(`primitives/frontload-audit.md` Budget-policy property *d*) **stays.** Paid
-tokens are not git-revertable, so spend accounting fails closed via its own
-write-ahead row. The "no write-ahead" claim above is scoped to *iteration-state*
-recovery only — it does **not** relax the spend ledger.
+state.** **Carve-out:** the metered-**spend** write-ahead ledger
+(`primitives/frontload-audit.md` Budget-policy property *d*) **stays** — paid
+tokens are not git-revertable; the "no write-ahead" claim is scoped to
+iteration-state recovery only.
 
 ---
 
-## loop/LEASE.md (rendered artifact — header carries the maintenance rules)
+## loop/LEASE.md (rendered artifact — UNTRACKED volatile liveness surface)
 
-> This block is the rendered `loop/LEASE.md`: a pure projection of the `lease:`
-> block in `loop/STATE.md` (the source of truth). Its header carries the
-> maintenance rules below so they survive context compaction even when the
-> prompt summary is lossy — the same compaction-survival discipline
-> `loop/PRESSURE.md` uses. Re-render it from STATE; never edit it as a store.
+> `/loopgen` adds `loop/LEASE.md` to the target repo's `.gitignore` at file
+> emission (composition step 7c). A pure projection of liveness; never
+> hand-edited. Rewritten in full and atomically (temp file + rename) every
+> iteration start. Identity is authoritative in the owner record
+> (`refs/loopgen/lease`).
 
-**Maintenance (every iteration, gated loops only):**
+```yaml
+generation: <n>             # echo of the OWNED generation, re-written every iteration start
+owner_id: "<owner-id>"      # echo, for diagnostics
+iteration: <i>
+iteration_started_at: <ts>
+expected_deadline: <ts>     # iteration_started_at + ttl — advancing this is the liveness signal
+status: running             # running | checkpointed | paused-external
+```
 
-- **Step 0 — stamp `heartbeat_at`** in `loop/STATE.md` `lease:` and re-render
-  `loop/LEASE.md`, within the same tool-call sequence, *before* the numbered
-  iteration protocol runs. A heartbeat is "the process reached step 0," nothing
-  more — never gate it on progress.
-- **Set `iteration_started_at` and `expected_deadline`** (`= iteration_started_at
-  + ttl`) at the start of each iteration.
-- **Advance `last_progress_at` only on verified progress** (a tier-1/2 signal),
-  never on a bare commit or a step-0 heartbeat.
-- **On takeover** (a new runner resuming a dead/hung loop): run the Acquisition
-  CAS, increment `generation`, re-read-and-abort-if-not-owner, then proceed.
-- **On a clean stop**, set `status` to `checkpointed` (checkpoint boundary) or
-  `paused-external` (explicit external pause) so an observer reads idle/done, not
-  hung.
+---
 
-**Full spec** (schema · acquisition CAS · liveness precedence · restart
-preconditions): `primitives/lease-protocol.md`. The emitted lease is reviewable
-on paper — an observer can compute hung/idle/alive by hand from the fields
-above, without the watchdog existing yet.
+## {{LEASE_MAINTENANCE}} (prompt-section — injected FIRST in the iteration protocol)
+
+> Fills `{{LEASE_MAINTENANCE}}` so the lease instructions reach `loop/PROMPT.md`.
+> Emitted **before `{{PRESSURE_SURFACE}}`** so the ownership check runs before any
+> other start-of-iteration work writes state. Gated and stripped like
+> `{{PRESSURE_SURFACE}}`.
+
+## Liveness lease (do this first, before anything else this iteration)
+
+Before the pressure weather and the numbered protocol — the very first thing each
+iteration — maintain the liveness lease. The **owner record** is the git ref
+`refs/loopgen/lease`, which points at a small blob; read it with
+`git cat-file -p $(git rev-parse refs/loopgen/lease)`. Your `owner_id` is the id
+this session runs under (bootstrap mints a fresh one; if a watchdog relaunched
+you, it wrote your id into the record when it took over).
+
+1. **Establish / confirm ownership before doing any work.**
+   - *Bootstrap* — only when `loop/STATE.md` shows `iteration: 0` (the canonical
+     re-entrant gate) **and** `refs/loopgen/lease` does not exist: build the owner
+     record `{generation: 0, owner_id: self, run_id, restart_count: 0,
+     acquired_at: now}`, write it as a blob and capture the id, then create the ref
+     with an all-zero expected-old (creation succeeds only if the ref is absent):
+
+     ```sh
+     new=$(printf '%s' "$owner_record_yaml" | git hash-object -w --stdin)
+     git update-ref refs/loopgen/lease "$new" 0000000000000000000000000000000000000000
+     git check-ignore -q loop/LEASE.md || printf 'loop/LEASE.md\n' >> .gitignore
+     ```
+
+     If the create loses (a racer won the ref), re-read and treat as *Confirm*.
+   - *Confirm* — read your own session id; if it equals the record's `owner_id`,
+     you are the current owner — adopt the record's `generation` for your stamps
+     and continue. (Checking your session id against `owner_id`, not the existing
+     `loop/LEASE.md` stamp, is what lets a watchdog-relaunched session resume: the
+     watchdog wrote *your* id into the record on takeover.)
+   - *Superseded* — if your session id ≠ the record's `owner_id` (a restarter
+     replaced you, or you lost the bootstrap race), **stop now — write nothing,
+     commit nothing.** Do not re-render pressure, do not touch `loop/STATE.md`.
+2. **Stamp liveness** into `loop/LEASE.md`, **atomically** (write a temp file then
+   rename over it), rewriting all fields: `generation` + `owner_id` (from the
+   owner record), `iteration`, `iteration_started_at`, `expected_deadline`
+   (= `iteration_started_at + ttl`), `status: running`. `loop/LEASE.md` is
+   untracked, so this never dirties tracked state.
+3. **Re-check before committing.** Before the end-of-iteration commit, re-read the
+   owner record and abort the commit if its `owner_id` is no longer your session
+   id (a takeover landed mid-iteration).
+4. **On a clean stop**, set `status: checkpointed` / `paused-external` in
+   `loop/LEASE.md` so an observer reads idle/done, not hung.
+
+This loop only ever **creates** the owner record (once, at bootstrap) and
+otherwise only **reads** it — it never mutates it and never restarts itself.
+Detecting a hung loop and taking it over is the external watchdog's job (deferred).

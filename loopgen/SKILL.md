@@ -67,8 +67,9 @@ Consult tiers are defined below; benchmark-frontier is defined in
 pressure object exists at compose time (gated; byte-identical when empty).
 `pressure-accounting` is the `frontier` projection of `pressure`, not a separate
 archetype-varying axis.
-`lease-protocol` is a **gated** primitive (not universal): it emits
-`loop/LEASE.md` + the `lease:` STATE block only for the unattended cadences
+`lease-protocol` is a **gated** primitive (not universal): it emits the untracked
+`loop/LEASE.md`, the owner-record git ref `refs/loopgen/lease`, and the
+`{{LEASE_MAINTENANCE}}` first-step prompt-section only for the unattended cadences
 (`cadence-shape ∈ {deferred-fire-and-forget, checkpoint-gated}`) or when the
 frontload `unattended` flag is set; interactive `sync` / `chapter` loops without
 the flag stay byte-identical (`primitives/lease-protocol.md`).
@@ -296,16 +297,19 @@ directories, performance reports, benchmark outputs, or generated artifacts.
 `pressure_ledger` — a checkpoint-level aggregate over those rows (not a
 field-for-field rename), rendered as a checkpoint contract.
 
-**Gated `loop/STATE.md` keys (unattended cadences only):**
-
-- `lease:` — `{run_id, runner_id, generation, iteration, iteration_started_at,
-  heartbeat_at, last_progress_at, expected_deadline, status}`, rendered to the
-  `loop/LEASE.md` projection each iteration. Present **only** when the lease gate
-  holds (`cadence-shape ∈ {deferred-fire-and-forget, checkpoint-gated}` or the
-  frontload `unattended` flag); stripped byte-identical otherwise. `heartbeat_at`
-  (liveness) and `last_progress_at` (stall detection) are deliberately separate
-  fields; `generation` is the CAS / fencing value. Spec:
-  `primitives/lease-protocol.md`.
+**Gated lease surfaces (unattended cadences only) — no `loop/STATE.md` keys.**
+The lease adds **no** `loop/STATE.md` block. Its owner record is the
+rollback-immune git ref `refs/loopgen/lease` (a blob `{generation, owner_id,
+run_id, restart_count, acquired_at}`, the CAS anchor); its liveness surface is the
+**untracked** `loop/LEASE.md` (`{generation, owner_id, iteration,
+iteration_started_at, expected_deadline, status}`, rewritten atomically each
+iteration start, `generation` echoing the record so a superseded render is
+discardable); its `ttl` / `restart_cap` config is read-only in the frontload
+preamble. Liveness is the **advancing `expected_deadline`** (no heartbeat field) —
+the running loop bootstraps / confirms / stamps, while takeover is the deferred
+watchdog's job. Present **only** when the lease gate holds (`cadence-shape ∈
+{deferred-fire-and-forget, checkpoint-gated}` or the frontload `unattended`
+flag); stripped byte-identical otherwise. Spec: `primitives/lease-protocol.md`.
 
 **Hybrid merge rule.** A hybrid is a union over **active contracts**, not a
 blind union over all contributing archetypes:
@@ -332,11 +336,13 @@ Important add-ons:
   `loop/BENCHMARK.md`, `loop/CANDIDATES.jsonl`, `loop/FRONTIER.json`, and
   `loop/traces/`.
 - `cadence-shape ∈ {deferred-fire-and-forget, checkpoint-gated}` (or the
-  frontload `unattended` flag) adds `loop/LEASE.md` + the gated `lease:` STATE
-  block (`primitives/lease-protocol.md`). frontier and greenfield are
-  `checkpoint-gated` by default, so they carry a lease by default; goal (`sync`)
-  and story (`chapter`) add neither unless the flag is set — byte-identical when
-  off.
+  frontload `unattended` flag) adds the **untracked** `loop/LEASE.md` (gitignored
+  volatile liveness surface), the owner-record git ref `refs/loopgen/lease`, the
+  gated `{{LEASE_MAINTENANCE}}` prompt-section, and `ttl` / `restart_cap` config in
+  the frontload preamble — **no `loop/STATE.md` `lease:` block**
+  (`primitives/lease-protocol.md`). frontier and greenfield are `checkpoint-gated`
+  by default, so they carry a lease by default; goal (`sync`) and story
+  (`chapter`) add none unless the flag is set — byte-identical when off.
 
 ## Phase 4 — Emit + surface decision
 

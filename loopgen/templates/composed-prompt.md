@@ -22,13 +22,19 @@ composed prompt.
    `greenfield` it is carried by invariant 7 instead, so it is not emitted twice.
 6. **Frontload preamble** — ALWAYS via `{{FRONTLOAD_PREAMBLE}}`
    (`primitives/frontload-audit.md` output).
-6a. **Pressure surface** — CONDITIONAL via `{{PRESSURE_SURFACE}}`
-   (`primitives/pressure.md`). Emitted right after the frontload preamble — the
-   weather is read before the body — but **only when ≥1 pressure object exists**
-   at compose time; otherwise stripped, leaving the prompt byte-identical.
-6b. **Subagent patterns** — CONDITIONAL via `{{SUBAGENT_PATTERNS}}`
-   (`primitives/subagent-patterns.md`). Emitted right after the pressure surface
-   — an available *capability* read before the body — but **only when
+6a. **Liveness lease maintenance** — CONDITIONAL via `{{LEASE_MAINTENANCE}}`
+   (`primitives/lease-protocol.md`). Emitted **first, right after the frontload
+   preamble**, so the ownership check runs before any state-writing step — but
+   **only on the lease gate** (`cadence-shape ∈ {deferred-fire-and-forget,
+   checkpoint-gated}` or the frontload `unattended` flag); otherwise stripped,
+   leaving the prompt byte-identical. Carried by all four bodies.
+6b. **Pressure surface** — CONDITIONAL via `{{PRESSURE_SURFACE}}`
+   (`primitives/pressure.md`). Emitted after the lease block — the weather is read
+   before the body — but **only when ≥1 pressure object exists** at compose time;
+   otherwise stripped, leaving the prompt byte-identical.
+6c. **Subagent patterns** — CONDITIONAL via `{{SUBAGENT_PATTERNS}}`
+   (`primitives/subagent-patterns.md`). Emitted after the pressure surface — an
+   available *capability* read before the body — but **only when
    `consult-tier ≥ 1`**, filtered to the patterns that tier meets; at `tier-0` it
    is stripped, leaving the prompt byte-identical. Carried by all four bodies.
 7. **Archetype body** — the nearest archetype's body, placeholders filled.
@@ -142,7 +148,22 @@ is invisible — the preamble MUST enumerate every divergence axis + its source.
      and stays byte-identical. The frontload Evaluator-integrity audit
      (`primitives/frontload-audit.md`) names any unmet integrity property as a
      `derivation-gap` before emit.
-7a. **Apply pressure surface** (`primitives/pressure.md`):
+7a. **Apply liveness lease maintenance** (`primitives/lease-protocol.md`):
+   - If the lease gate holds (`cadence-shape ∈ {deferred-fire-and-forget,
+     checkpoint-gated}` or the frontload `unattended` flag), replace
+     `{{LEASE_MAINTENANCE}}` with the `## Liveness lease (do this first …)` block
+     below the second `---` in `primitives/lease-protocol.md` (emitted **first**,
+     before pressure, so the ownership check precedes any state write); record the
+     `ttl` / `restart_cap` config in the frontload preamble; and **on the file
+     surface only** (skip on a chat-only / dry-run derivation — Phase 4) add
+     `loop/LEASE.md` to the target repo's `.gitignore` if absent (`/loopgen` adds
+     it at emit; the lease bootstrap defensively re-ensures it via idempotent
+     `git check-ignore`, so neither double-appends). The owner record is the git
+     ref `refs/loopgen/lease` — there is **no** `loop/STATE.md` `lease:` block.
+   - Otherwise strip `{{LEASE_MAINTENANCE}}` entirely (step 8 removes it) and emit
+     neither `loop/LEASE.md` nor any `unattended` provenance token —
+     byte-identical, gated exactly like `{{PRESSURE_SURFACE}}`.
+7b. **Apply pressure surface** (`primitives/pressure.md`):
    - If `count(pressure_objects) ≥ 1` at compose (the frontload latent-pressure
      mining step or a human seed produced ≥1 row), replace `{{PRESSURE_SURFACE}}`
      with the block below the `---` in `primitives/pressure.md`, resolving any
@@ -153,12 +174,16 @@ is invisible — the preamble MUST enumerate every divergence axis + its source.
    - The active rows live in `loop/PRESSURE.md` (re-read each pass), not inlined
      into the prompt; the emitted block carries the re-read contract, the mode
      law, and the backpressure instruction.
-7b. **Apply subagent patterns** (`primitives/subagent-patterns.md`):
+7c. **Apply subagent patterns** (`primitives/subagent-patterns.md`):
    - If `consult-tier ≥ 1`, replace `{{SUBAGENT_PATTERNS}}` with the block below
-     the `---` in `primitives/subagent-patterns.md`, keeping only the B/C/D rows
-     whose tier-gate the detected consult-tier meets (D at tier ≥ 1; B and C at
-     tier 3, or C wherever frontload binds a pollable job channel), and fill
-     `{{CONSULT_TIER}}`.
+     the `---` in `primitives/subagent-patterns.md`, but **emit only the B/C/D
+     bullets the detected tier meets — drop the rest at substitution time** (a
+     content filter the composer applies as it fills the placeholder, *not* step
+     8's whole-placeholder strip): **D** at tier ≥ 1; **B** at tier 3; **C** at
+     tier 3, or at tier ≥ 1 when frontload binds a pollable job channel. E.g. a
+     tier-1 host with no pollable channel emits the intro + **D only** (B and C
+     are omitted, never inlined); tier-3 emits D + B + C. Fill `{{CONSULT_TIER}}`
+     with the full tier label (e.g. `tier-2`).
    - Otherwise (`tier-0`) strip `{{SUBAGENT_PATTERNS}}` entirely (step 8 removes
      it). The loop runs single-agent via pattern A — byte-identical, gated
      exactly like `{{PRESSURE_SURFACE}}`.
@@ -167,7 +192,12 @@ is invisible — the preamble MUST enumerate every divergence axis + its source.
      iteration.
 8. **Strip dead sections.** Remove any section whose `{{placeholder}}` was not
    substituted. If any `{{…}}` survives, WARN in the emit summary — the emitted
-   prompt must contain no dead sections.
+   prompt must contain no dead sections. When a stripped placeholder sat on its
+   own line between blank lines, **collapse the surrounding blanks to a single
+   newline**, so the stacked gated placeholders (`{{PRESSURE_SURFACE}}` /
+   `{{SUBAGENT_PATTERNS}}` / `{{LEASE_MAINTENANCE}}`) leave byte-identical output
+   in every on/off combination (no double blank line when an inner one is
+   stripped).
 9. **Verify halt semantics.** The emitted prompt must distinguish invocation
    halt from archetype completion. Shared halt causes (`genuine-escalate`,
    `derivation-gap`, `signal-starvation`, `wrong-loop`) never mean the

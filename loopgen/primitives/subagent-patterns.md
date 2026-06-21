@@ -31,9 +31,9 @@ capability** — a deliberate simplification, not a precise capability probe.
 | Pattern | What it is | Gate |
 |---|---|---|
 | **A** single-agent iteration | the existing per-iteration protocol every body emits | always — **not** part of this block |
-| **D** cheap independent re-check | a quick *second look* at a result through an independent channel | tier ≥ 1 (tier-1 = human-look gate; tier ≥ 2 = programmatic) |
+| **D** cheap independent re-check | a quick *second look* at a result through an independent channel | tier ≥ 1 (tier-1 = async human-bridge handoff; tier ≥ 2 = programmatic) |
 | **B** parallel fan-out | split an investigation across independent agents (investigate / refute / cross-domain) and reconcile | tier 3 (blind-adversarial + multi-modal fabric) |
-| **C** long-experiment polling | submit a long job, poll it, auto-diagnose and resubmit on failure instead of blocking | tier 3, or wherever frontload binds a pollable job channel |
+| **C** long-experiment polling | submit a long job, poll it, auto-diagnose and resubmit on failure instead of blocking — under a durable job id + capped retry/backoff | tier 3, or tier ≥ 1 with a pollable job channel |
 
 **D is a second look, not a tribunal.** It exists to catch the loop's own
 *honest* mistakes (drift, a missed case), not to "prove" the loop didn't cheat —
@@ -47,10 +47,17 @@ Consult → Architect → Build bridge a `frontier` body already carries
 
 ## Placeholders
 
-`{{SUBAGENT_PATTERNS}}` — substituted with the block below the `---`, filtered to
-the patterns the detected consult-tier meets; stripped entirely at `tier-0`. It
-sits immediately after `{{PRESSURE_SURFACE}}` in every body (section 6b — mirrors
-6a's placement and strip rule).
+`{{SUBAGENT_PATTERNS}}` — substituted with the block below the `---`, **filtered
+bullet-by-bullet** to the B/C/D patterns the detected consult-tier meets (D at
+tier ≥ 1; B at tier 3; C at tier 3 or tier ≥ 1 with a pollable channel) — the
+composer emits only the applicable bullets as it fills the placeholder (step 7b),
+so a tier-1/2 host never sees a tier-3 pattern inlined; the whole block is
+stripped at `tier-0`. It sits immediately after `{{PRESSURE_SURFACE}}` in every
+body (section 6b — mirrors 6a's placement and strip rule).
+
+`{{CONSULT_TIER}}` — a **nested** fill inside the emitted block (the loop's
+detected tier label, e.g. `tier-2`), present only when the block emits; filled by
+step 7b, never left dangling (at `tier-0` the whole block is gone).
 
 ## Authoring guidance (not emitted)
 
@@ -69,21 +76,24 @@ sits immediately after `{{PRESSURE_SURFACE}}` in every body (section 6b — mirr
 Pattern **A — single-agent iteration** is the protocol you already run; it is
 not listed here and is always sufficient on its own. The patterns below are
 *optional* parallel / independent moves this host's consult channel
-(`tier-{{CONSULT_TIER}}`) makes available — capabilities to reach for **when they
+(`{{CONSULT_TIER}}`) makes available — capabilities to reach for **when they
 help**, never gates you must pass to accept an iteration.
 
 - **D — cheap independent re-check** *(consult tier ≥ 1)*: take a quick second
   look at a result through an independent channel before trusting it. At tier-1
-  this is an async human-look handoff; at tier ≥ 2 it is programmatic. A *second
+  this is an async human-bridge handoff; at tier ≥ 2 it is programmatic. A *second
   look* to catch your own honest mistakes (drift, a missed case) — **not** an
   accountability tribunal, and never a required gate.
 - **B — parallel fan-out** *(consult tier 3)*: split an investigation across
   independent agents — investigate / refute / cross-domain — and reconcile their
   findings. Blind-adversarial + multi-modal; use when one search angle won't
   surface everything.
-- **C — long-experiment polling** *(consult tier 3, or wherever frontload binds a
-  pollable job channel)*: submit a long-running job, poll it, and auto-diagnose
-  and resubmit on failure instead of blocking the loop on it.
+- **C — long-experiment polling** *(consult tier 3, or tier ≥ 1 when frontload
+  binds a pollable job channel — never at tier-0, where this block is stripped)*:
+  submit a long-running job, poll it, and auto-diagnose and resubmit on failure
+  instead of blocking the loop on it. Resubmit only under a **durable job
+  identity** (persisted job id / idempotency key) and a **capped retry with
+  backoff** — never an unbounded resubmit loop.
 
 Only the patterns at or below this loop's consult tier are live; the rest were
 dropped at compose. None is required to accept an iteration — the single-agent

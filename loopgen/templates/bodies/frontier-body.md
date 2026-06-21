@@ -26,6 +26,8 @@ Your job is to improve the repository's evidence-backed frontier.
 
 {{FRONTLOAD_PREAMBLE}}
 
+{{LEASE_MAINTENANCE}}
+
 {{PRESSURE_SURFACE}}
 
 {{SUBAGENT_PATTERNS}}
@@ -493,6 +495,9 @@ Placeholders populated during derivation (see SKILL.md step 6):
 - `{{SUBAGENT_PATTERNS}}` — the subagent-pattern catalog B/C/D
   (`primitives/subagent-patterns.md`), emitted only at `consult-tier ≥ 1` and
   filtered to that tier; stripped byte-identical at tier-0.
+- `{{LEASE_MAINTENANCE}}` — the liveness-lease maintenance block
+  (`primitives/lease-protocol.md`), emitted only on the lease gate (unattended
+  cadence or the frontload `unattended` flag); stripped byte-identical otherwise.
 - `{{EVALUATOR_TIER}}` — current T0–T6 tier.
 - `{{RAMP_GUIDANCE}}` — one line. Omit if at or above T3.
 - `{{CHEAP_CHANNEL}}` / `{{EXPENSIVE_CHANNEL}}` — named commands or

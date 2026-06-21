@@ -27,6 +27,8 @@ make it real — without grading your own homework.
 
 {{FRONTLOAD_PREAMBLE}}
 
+{{LEASE_MAINTENANCE}}
+
 {{PRESSURE_SURFACE}}
 
 {{SUBAGENT_PATTERNS}}
@@ -102,6 +104,9 @@ Placeholders populated during composition (see `templates/composed-prompt.md`):
 - `{{SUBAGENT_PATTERNS}}` — the subagent-pattern catalog B/C/D
   (`primitives/subagent-patterns.md`), emitted only at `consult-tier ≥ 1` and
   filtered to that tier; stripped byte-identical at tier-0.
+- `{{LEASE_MAINTENANCE}}` — the liveness-lease maintenance block
+  (`primitives/lease-protocol.md`), emitted only on the lease gate (unattended
+  cadence or the frontload `unattended` flag); stripped byte-identical otherwise.
 - `{{INVARIANTS}}` — inline the 11 invariants verbatim from
   `references/greenfield-invariants.md`.
 - `{{CAPABILITY_LIST}}` — domain-specific tools the loop may install (invariant 6).

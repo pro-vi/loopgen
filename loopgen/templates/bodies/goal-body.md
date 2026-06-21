@@ -29,6 +29,8 @@ Your job is to make a finite acceptance inventory pass without weakening it.
 
 {{FRONTLOAD_PREAMBLE}}
 
+{{LEASE_MAINTENANCE}}
+
 {{PRESSURE_SURFACE}}
 
 {{SUBAGENT_PATTERNS}}
@@ -129,10 +131,15 @@ closure.** Commit-log narrative is the weakest signal: use it only as a
 **negative** anti-repetition signal, never as positive generative evidence for
 the next intervention; self-narrated recency re-certifies whatever shape
 dominated the window. So a bare commit does **not** move a criterion toward
-`PASS` and does **not** reset the `STUCK` counter (only criterion-specific
-`pass_evidence` above is new evidence). `FIXED ≠ CLOSED` (oracle principle #4):
-a passing per-criterion verifier is at most `PASS_PENDING_FINAL` until the
-final-verify proves the whole inventory in one repo state.
+`PASS` and does **not** reset the `STUCK` / replan counter. What *does* count as
+new evidence is criterion-specific and twofold: `pass_evidence` (movement toward
+pass) **or sharper `fail_evidence`** — a fresh failing trace, a narrower repro, a
+newly isolated cause (a criterion that is still learning, per the iteration
+protocol's "moves toward pass *or gains sharper failure evidence*" rule).
+Provenance is neither: it neither advances toward pass nor sharpens the failure,
+so it cannot reset a counter. `FIXED ≠ CLOSED` (oracle principle #4): a passing
+per-criterion verifier is at most `PASS_PENDING_FINAL` until the final-verify
+proves the whole inventory in one repo state.
 
 ## Channels
 
@@ -337,6 +344,9 @@ Placeholders populated during derivation (see SKILL.md):
 - `{{SUBAGENT_PATTERNS}}` — the subagent-pattern catalog B/C/D
   (`primitives/subagent-patterns.md`), emitted only at `consult-tier ≥ 1` and
   filtered to that tier; stripped byte-identical at tier-0.
+- `{{LEASE_MAINTENANCE}}` — the liveness-lease maintenance block
+  (`primitives/lease-protocol.md`), emitted only on the lease gate (unattended
+  cadence or the frontload `unattended` flag); stripped byte-identical otherwise.
 - `{{GOAL_VERSION}}` — fingerprint of criteria + provenance + authority +
   final-verify.
 - `{{REGRESSION_MODE}}` — omit unless this is a rerun (then: "Regression
