@@ -50,14 +50,14 @@ Consult → Architect → Build bridge a `frontier` body already carries
 `{{SUBAGENT_PATTERNS}}` — substituted with the block below the `---`, **filtered
 bullet-by-bullet** to the B/C/D patterns the detected consult-tier meets (D at
 tier ≥ 1; B at tier 3; C at tier 3 or tier ≥ 1 with a pollable channel) — the
-composer emits only the applicable bullets as it fills the placeholder (step 7b),
+composer emits only the applicable bullets as it fills the placeholder (step 7c),
 so a tier-1/2 host never sees a tier-3 pattern inlined; the whole block is
 stripped at `tier-0`. It sits immediately after `{{PRESSURE_SURFACE}}` in every
-body (section 6b — mirrors 6a's placement and strip rule).
+body (section 6c — same gated placement + strip rule as the pressure surface).
 
 `{{CONSULT_TIER}}` — a **nested** fill inside the emitted block (the loop's
 detected tier label, e.g. `tier-2`), present only when the block emits; filled by
-step 7b, never left dangling (at `tier-0` the whole block is gone).
+step 7c, never left dangling (at `tier-0` the whole block is gone).
 
 ## Authoring guidance (not emitted)
 
