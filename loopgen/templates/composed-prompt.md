@@ -159,7 +159,8 @@ is invisible — the preamble MUST enumerate every divergence axis + its source.
      surface only**
      (skip on a chat-only / dry-run derivation — Phase 4) add `loop/LEASE.md` to
      the target repo's `.gitignore` if absent (`/loopgen` adds it at emit; the loop
-     re-ensures it idempotently via `git check-ignore`). The shipped lease carries
+     re-ensures it by grepping the tracked `.gitignore`, not `git check-ignore`,
+     so the portable versioned entry is added). The shipped lease carries
      **no `loop/STATE.md` keys and no owner/ownership state** — safe restart is the
      deferred watchdog's job.
    - Otherwise strip `{{LEASE_MAINTENANCE}}` entirely (step 8 removes it) and emit
