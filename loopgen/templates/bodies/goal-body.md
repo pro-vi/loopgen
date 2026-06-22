@@ -252,9 +252,11 @@ emit `oracle-drift` and stop.
 ### Partial completion is not success
 
 The loop continues while at least one unpassed criterion has a legal
-reversible next move inside scope. Halt with `partial-deadlock` only when
-every unpassed criterion is `STUCK` / `BLOCKED_EXTERNAL` / `QUARANTINED` /
-wrong-loop-shaped.
+reversible next move inside scope — **including a not-yet-tried item-scoped
+replan (step 10)**. Halt with `partial-deadlock` only when every unpassed
+criterion is `STUCK` / `BLOCKED_EXTERNAL` / `QUARANTINED` / wrong-loop-shaped
+**and every wrong-loop-shaped item has already been item-scoped-replanned without
+success**.
 
 When halting partial: preserve pass evidence, list every unpassed
 criterion with its latest failing evidence, name the next required
@@ -285,7 +287,8 @@ Halt when:
 - all criteria reach `PASS` in the final-verify → `criteria-met` →
   `stop-and-summarize`
 - every remaining unpassed criterion is `STUCK` / `BLOCKED_EXTERNAL` /
-  `QUARANTINED` / wrong-loop-shaped → `partial-deadlock`
+  `QUARANTINED` / wrong-loop-shaped, and every wrong-loop-shaped item has already
+  been item-scoped-replanned without success (step 10) → `partial-deadlock`
 - oracle drift is detected and cannot be repaired without authority →
   `oracle-drift`
 - a genuine irreversible / external blocker prevents proof → `escalate`
