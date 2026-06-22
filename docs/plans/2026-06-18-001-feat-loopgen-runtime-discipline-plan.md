@@ -1,10 +1,10 @@
 ---
-title: Evolving loopgen with AutoResearch's runtime discipline (v3.1 — deflated + readiness-hardened)
+title: Evolving loopgen with AutoResearch's runtime discipline (v3.3 — U1 dropped; ships U2/U3/U4)
 type: feat
-status: active
+status: completed
 date: 2026-06-18
 origin: standalone — loopgen × Deli AutoResearch comparison (this session)
-supersedes: v3 (deflation); v2 (fire-once); v1 (accepted-delta U11 versioning)
+supersedes: v3.2 (lease deflation); v3.1 (readiness-hardened); v3 (deflation); v2 (fire-once); v1 (accepted-delta U11 versioning)
 ---
 
 ## Revision lineage
@@ -13,7 +13,8 @@ supersedes: v3 (deflation); v2 (fire-once); v1 (accepted-delta U11 versioning)
 - **v2** — fire-once reframe. loopgen is fire-once-and-consumed → no consumers pinned to old output → backward compatibility is not a real obligation. Dropped versioning/compat entirely; kept the correctness fixes. *(The U11 sigil + backward-compat framing are now fully retired from the repo — PR #4.)*
 - **v3** — deflation. Threat model = **honest failure, not deception.** A prompted agent doesn't *go out of its way to cheat* — it drifts under context pressure, pattern-completes "looks done," confabulates, takes the locally-easy path. So don't *over-build* (or duplicate) accountability machinery; keep the anti-*honest-failure* defenses (most of which loopgen already has) and foreground the few genuine nuggets.
 - **v3.1 (this) — readiness-hardened.** A 3-checker readiness pass against the post-cleanup repo. Corrected one thesis error (the integrity wall is anti-*optimism* for self-graded oracles, not "trained-RL theater"); carved out the spend ledger from the no-write-ahead claim; deflated U3 (its rule already ships); gave U1 a real design (it was the named centerpiece but undesigned); deflated U2's gate to the existing tier ladder; demoted U5 to backlog.
-- **v3.2 (PR-review deflation — this PR's commits) — U1 lease reduced to liveness-detection-only.** PR review (Codex) showed the owner-record / `owner_id` / CAS **ownership** layer is incompatible with `/goal`'s file-only re-invocation (a session can't recall a self-minted id across iterations → it self-supersedes) and that a durable owner ref blocks future runs. Resolved by removing ownership from the running loop entirely: the shipped lease is just an untracked `loop/LEASE.md` heartbeat (`{iteration, iteration_started_at, expected_deadline, status}`, advancing-deadline) that an external observer reads; mutual exclusion / ownership / identity / ref-lifecycle / safe restart moved wholly to the **deferred watchdog**, with its open problems named. **`primitives/lease-protocol.md` is the source of truth; the U1 detail below is the superseded original design, kept for the decision record.**
+- **v3.2 (PR-review deflation — this PR's commits) — U1 lease reduced to liveness-detection-only.** PR review (Codex) showed the owner-record / `owner_id` / CAS **ownership** layer is incompatible with `/goal`'s file-only re-invocation (a session can't recall a self-minted id across iterations → it self-supersedes) and that a durable owner ref blocks future runs. Resolved by removing ownership from the running loop entirely: the shipped lease is just an untracked `loop/LEASE.md` heartbeat (`{iteration, iteration_started_at, expected_deadline, status}`, advancing-deadline) that an external observer reads; mutual exclusion / ownership / identity / ref-lifecycle / safe restart moved wholly to the **deferred watchdog**, with its open problems named.
+- **v3.3 (this PR, final) — U1 DROPPED entirely.** Even deflated, the lease only *produces* a liveness file; its value needs a *consumer* — a watchdog that detects the blown deadline and acts. That watchdog must be launched **outside the loop's failure domain**, which requires runtime ownership loopgen structurally lacks: it emits a *prompt* for a runner it doesn't control. A self-spawned watchdog dies with the session that spawned it, and some runners (e.g. Codex) can't spawn one at all. The *nugget* (an agent can't self-report its death) is real, but the *mechanism* (a watchdog) doesn't port from AutoResearch's **owns-its-runtime** context to loopgen's **emits-a-prompt** context — a mis-graft. loopgen already keeps the portable half: crash **recovery** via git + STATE. Dropped U1 entirely (the `lease-protocol` primitive, the `{{LEASE_MAINTENANCE}}` wiring across the four bodies + `composed-prompt.md`, and the `SKILL.md` / `frontload-audit.md` hooks). The PR ships **U2 + U3 + U4** — all runtime-independent.
 
 ---
 
@@ -23,7 +24,7 @@ The headline: **loopgen has independently reinvented most of the honest-failure 
 
 | Nugget | Honest failure it addresses | loopgen today | Action |
 |---|---|---|---|
-| **External liveness observer** (lease + tiny watchdog) | the loop **dies silently** — session death, hang, context overflow. Silent *and* expensive. | **absent** | **ADD — the one real graft** |
+| **External liveness observer** (lease + tiny watchdog) | the loop **dies silently** — session death, hang, context overflow. Silent *and* expensive. | **absent** (crash *recovery* via git + STATE *is* present) | ~~ADD~~ → explored as U1, **DROPPED in review (v3.3)** — no consumer is buildable where loopgen runs (watchdog needs runtime ownership loopgen lacks) |
 | **Subagent patterns A–D** | can't parallelize, can't poll a long job, no cheap independent second look | partial (consult-tiers, no catalog) | **ADD** (capability) |
 | Goal: provenance ≠ progress/closure | optimism: *"I committed code → progress"* with no acceptance pass | **mostly already has** (`evidence-tier` tier-4 + goal-body Invalid-pass-evidence) | thin reinforcement + the one new bit |
 | "Restructure, don't retune" on stall | cognitive-loop — trying harder at the same dead end | partial (`same-family` admissibility) | reinforce, 1 line |
@@ -32,7 +33,7 @@ The headline: **loopgen has independently reinvented most of the honest-failure 
 | Commit-per-iteration recovery | crash mid-run | **already has** (end-of-iteration transaction) | leave — git is recovery |
 | Oracle-integrity wall (no candidate authors **+** verifies **+** promotes its own evidence) | optimism: the loop over-trusts a *self-graded oracle* | **has it for eval loops** (benchmark-frontier evaluator-integrity audit, when a benchmark/eval/harness object is trusted or mutated) | leave — present where eval-loops self-grade; extending to other archetypes is a deliberate non-goal, **don't hoist/duplicate** |
 
-So the real grafts are essentially two: **(1) an external liveness observer** and **(2) the subagent-pattern catalog** — plus a **thin goal reinforcement** for the one closure check that's slightly under-stated for `goal`.
+So the real grafts came down to: **the subagent-pattern catalog** — plus a **thin goal reinforcement** for the one closure check that's slightly under-stated for `goal`, and a light frontload touch-up. (The external liveness observer was explored as U1 and **dropped in review** — its watchdog consumer can't be built where loopgen runs; see lineage v3.3.)
 
 ---
 
@@ -55,7 +56,7 @@ So the real grafts are essentially two: **(1) an external liveness observer** an
 
 ### U1. External liveness observer (lease spec) + git-backed recovery  *(the centerpiece — now designed)*
 
-> **⚠️ Shipped contract (PR-review deflated — supersedes the schema / acquisition / restart-preconditions / acceptance below).** The running loop carries **no ownership state**: no `run_id` / `runner_id` / `generation` / `heartbeat_at` / `last_progress_at`, **no `loop/STATE.md` keys**, no CAS. It only stamps an **untracked** `loop/LEASE.md` (`{iteration, iteration_started_at, expected_deadline, status}`) with an advancing `expected_deadline` each iteration; an external observer reads it (**hung** iff `status == running ∧ now > expected_deadline`). Mutual exclusion / ownership / identity / ref-lifecycle / safe restart are the **deferred watchdog's** — open problems named in `primitives/lease-protocol.md`, which is the **source of truth**. The detailed design below is the **superseded original**, kept for the decision record, not as the contract (see lineage v3.2).
+> **❌ U1 was DROPPED — nothing below ships (PR review; see lineage v3.3).** The lease delivers value only through a *consumer* (a watchdog that detects the blown deadline and acts), and that watchdog must run **outside the loop's failure domain** — which requires runtime ownership loopgen lacks (it emits a *prompt* for a runner it doesn't control; a self-spawned watchdog dies with the session, and runners like Codex can't spawn one). The *nugget* (an agent can't self-report its death) is real; the *mechanism* (a watchdog) doesn't port from AutoResearch's owns-its-runtime context. loopgen keeps the portable half — crash *recovery* via git + STATE. **The entire U1 design below is kept only as the decision record of what was explored and why it was cut; none of it is in the shipped skill.**
 
 - **Goal:** Cover the one honest failure loopgen can't currently survive — the loop **dying** unobserved — without binding loopgen to a runtime and without ACID machinery.
 - **Why it's the nugget:** an agent cannot self-report its own death; a `last_seen` it writes then hangs on looks healthy forever. This needs an *external* observer.
@@ -140,4 +141,4 @@ So the real grafts are essentially two: **(1) an external liveness observer** an
 - Deferred: S13 domain-pipeline overlay, S14 quality-gate ladder, the watchdog *implementation* (U1 ships the spec + a buildable paper-reviewable acceptance check). If S13 ever lands a trained-reward loop, revisit there.
 
 ## Net shape
-**2 real grafts (U1 lease, U2 subagent catalog) + 1 light touch-up (U4) + 1 thin goal-body reinforcement (U3)** — snapshot linter → backlog. Down from v2's 12 units; smaller than the surface it edits, because loopgen already holds most of the honest-failure defenses. Ready-to-build now: **U3 + U4**; then **U1** (designed above); then **U2** (sequence its `SKILL.md` edit after U1's).
+**Shipped: 1 real graft (U2 subagent catalog) + 1 light touch-up (U4) + 1 thin goal-body reinforcement (U3).** U1 (the liveness lease) was **dropped in PR review** — its watchdog consumer can't be built where loopgen runs (lineage v3.3); the portable failure defense, crash *recovery*, loopgen already had via git + STATE. Snapshot linter → backlog. Far smaller than the surface it edits, because loopgen already holds most of the honest-failure defenses.

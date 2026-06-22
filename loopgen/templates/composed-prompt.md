@@ -22,18 +22,11 @@ composed prompt.
    `greenfield` it is carried by invariant 7 instead, so it is not emitted twice.
 6. **Frontload preamble** — ALWAYS via `{{FRONTLOAD_PREAMBLE}}`
    (`primitives/frontload-audit.md` output).
-6a. **Liveness lease maintenance** — CONDITIONAL via `{{LEASE_MAINTENANCE}}`
-   (`primitives/lease-protocol.md`). Emitted **right after the frontload
-   preamble** — the loop stamps its liveness heartbeat at the start of the
-   iteration — but **only on the lease gate** (`cadence-shape ∈
-   {deferred-fire-and-forget, checkpoint-gated}` or the frontload `unattended`
-   flag); otherwise stripped, leaving the prompt byte-identical. Carried by all
-   four bodies.
-6b. **Pressure surface** — CONDITIONAL via `{{PRESSURE_SURFACE}}`
-   (`primitives/pressure.md`). Emitted after the lease block — the weather is read
-   before the body — but **only when ≥1 pressure object exists** at compose time;
-   otherwise stripped, leaving the prompt byte-identical.
-6c. **Subagent patterns** — CONDITIONAL via `{{SUBAGENT_PATTERNS}}`
+6a. **Pressure surface** — CONDITIONAL via `{{PRESSURE_SURFACE}}`
+   (`primitives/pressure.md`). Emitted right after the frontload preamble — the
+   weather is read before the body — but **only when ≥1 pressure object exists**
+   at compose time; otherwise stripped, leaving the prompt byte-identical.
+6b. **Subagent patterns** — CONDITIONAL via `{{SUBAGENT_PATTERNS}}`
    (`primitives/subagent-patterns.md`). Emitted after the pressure surface — an
    available *capability* read before the body — but **only when
    `consult-tier ≥ 1`**, filtered to the patterns that tier meets; at `tier-0` it
@@ -142,31 +135,14 @@ is invisible — the preamble MUST enumerate every divergence axis + its source.
      generated/minted answer key, or eval-set evolution), seed the
      `### Oracle-integrity pressure` rows (`primitives/benchmark-frontier.md`) into
      `loop/STATE.md` `pressure_objects`, so `{{PRESSURE_SURFACE}}` fires via its own
-     ≥1-object gate (step 7b). The two gates **nest**: oracle-integrity rows are a
+     ≥1-object gate (step 7a). The two gates **nest**: oracle-integrity rows are a
      strict subset of overlay-active-and-oracle-trusted cases, so they never appear
      without the overlay block that explains them, and a pure archetype — or a
      benchmark overlay over a deterministic non-LLM, non-minted oracle — seeds none
      and stays byte-identical. The frontload Evaluator-integrity audit
      (`primitives/frontload-audit.md`) names any unmet integrity property as a
      `derivation-gap` before emit.
-7a. **Apply liveness lease maintenance** (`primitives/lease-protocol.md`):
-   - If the lease gate holds (`cadence-shape ∈ {deferred-fire-and-forget,
-     checkpoint-gated}` or the frontload `unattended` flag), replace
-     `{{LEASE_MAINTENANCE}}` with the `## Liveness lease (stamp at the start …)`
-     block below the second `---` in `primitives/lease-protocol.md` (the lease
-     `ttl` is a **frontload item set in Phase 1**, so a concrete value is already
-     in the preamble by step 3 — step 7a does not set it); and **on the file
-     surface only**
-     (skip on a chat-only / dry-run derivation — Phase 4) add `loop/LEASE.md` to
-     the target repo's `.gitignore` if absent (`/loopgen` adds it at emit; the loop
-     re-ensures it by grepping the tracked `.gitignore`, not `git check-ignore`,
-     so the portable versioned entry is added). The shipped lease carries
-     **no `loop/STATE.md` keys and no owner/ownership state** — safe restart is the
-     deferred watchdog's job.
-   - Otherwise strip `{{LEASE_MAINTENANCE}}` entirely (step 8 removes it) and emit
-     neither `loop/LEASE.md` nor any `unattended` provenance token —
-     byte-identical, gated exactly like `{{PRESSURE_SURFACE}}`.
-7b. **Apply pressure surface** (`primitives/pressure.md`):
+7a. **Apply pressure surface** (`primitives/pressure.md`):
    - If `count(pressure_objects) ≥ 1` at compose (the frontload latent-pressure
      mining step or a human seed produced ≥1 row), replace `{{PRESSURE_SURFACE}}`
      with the block below the `---` in `primitives/pressure.md`, resolving any
@@ -177,7 +153,7 @@ is invisible — the preamble MUST enumerate every divergence axis + its source.
    - The active rows live in `loop/PRESSURE.md` (re-read each pass), not inlined
      into the prompt; the emitted block carries the re-read contract, the mode
      law, and the backpressure instruction.
-7c. **Apply subagent patterns** (`primitives/subagent-patterns.md`):
+7b. **Apply subagent patterns** (`primitives/subagent-patterns.md`):
    - If `consult-tier ≥ 1`, replace `{{SUBAGENT_PATTERNS}}` with the block below
      the `---` in `primitives/subagent-patterns.md`, but **emit only the B/C/D
      bullets the detected tier meets — drop the rest at substitution time** (a
@@ -198,7 +174,7 @@ is invisible — the preamble MUST enumerate every divergence axis + its source.
    prompt must contain no dead sections. When a stripped placeholder sat on its
    own line between blank lines, **collapse the surrounding blanks to a single
    newline**, so the stacked gated placeholders (`{{PRESSURE_SURFACE}}` /
-   `{{SUBAGENT_PATTERNS}}` / `{{LEASE_MAINTENANCE}}`) leave byte-identical output
+   `{{SUBAGENT_PATTERNS}}`) leave byte-identical output
    in every on/off combination (no double blank line when an inner one is
    stripped).
 9. **Verify halt semantics.** The emitted prompt must distinguish invocation
