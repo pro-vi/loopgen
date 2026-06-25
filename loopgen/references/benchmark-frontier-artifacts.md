@@ -80,7 +80,7 @@ claim_scope: search_only | product_progress
 eval_health: calibrated | flaky | underpowered | contaminated | gamed | stale | judge_uncalibrated
 pressure_status: open | paid | blocked | exhausted
 pressure_debt: none | low | medium | high | explicitly_deferred
-checkpoint_reason: plateau_after_active_pressure | budget_exhausted | evaluator_invalid | risk_limit_hit | target_gap_unresolved | negative_result_saved | null
+checkpoint_reason: plateau_after_active_pressure | budget_exhausted | evaluator_invalid | risk_limit_hit | target_gap_unresolved | negative_result_saved | null   # null = FRONTIER.json resting value (no checkpoint yet); the 6 named reasons are the prose enum
 next_pressure: string | null   # the deferred rung's next step when blocked
 deferred_pressure:             # present only when pressure_status: blocked
   deferred_rung: holdout | adversarial | meta_eval

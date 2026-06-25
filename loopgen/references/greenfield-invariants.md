@@ -218,6 +218,7 @@ own `research_complete: yes` gate. Phase order: research → preloop → bootstr
 Loops produce hundreds of durable artifacts (renders, frame-grabs,
 transcripts, generated assets). The LEDGER and score files are durable
 text; everything else is at risk until committed. Hard rule: every
-iteration with file changes ends with `git add … && git commit` before
-the iteration ends. Format: `chore(loop): iter NNN — <mode> —
-<focus>`. Use `COMMIT_APPROVED=1` env to bypass interactive hooks.
+**accepted** iteration with file changes ends with `git add … && git commit`
+before the iteration ends; rejected or undecided diffs are reverted, not
+committed (matching `runner-contract.md`). Format: `chore(loop): iter NNN —
+<mode> — <focus>`. Use `COMMIT_APPROVED=1` env to bypass interactive hooks.
