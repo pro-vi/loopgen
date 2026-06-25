@@ -13,6 +13,15 @@ compaction.
 Any composed prompt whose `artifact-shape` is not `prompt-only` (i.e. almost
 all of them), as a framing note above the queue section.
 
+## Composition notes
+
+- The concrete queue is chosen by `artifact-shape`: `acceptance-inventory`
+  (goal) · `storyboard` (story) · `rubric+intent` (greenfield) ·
+  `findings-ledger` (frontier).
+- The queue is a tier-1/2 surface in `evidence-tier.md`.
+
+---
+
 ## Why it is load-bearing
 
 - **Human-reviewable** after a long autonomous run or a context compaction.
@@ -42,10 +51,3 @@ inherited by pure frontier.
 
 Only the simplest finite single-criterion runs ("I found one bug, close it")
 need no queue.
-
-## Composition notes
-
-- The concrete queue is chosen by `artifact-shape`: `acceptance-inventory`
-  (goal) · `storyboard` (story) · `rubric+intent` (greenfield) ·
-  `findings-ledger` (frontier).
-- The queue is a tier-1/2 surface in `evidence-tier.md`.

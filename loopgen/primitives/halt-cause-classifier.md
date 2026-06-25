@@ -11,6 +11,14 @@ Every composed prompt, under "Halt conditions." Emit the shared causes plus the
 nearest archetype's stop cause (a divergence may add a second archetype's stop
 cause). For frontier, the stop cause is a checkpoint, not completion.
 
+## Composition notes
+
+- The stop cause matches the archetype's `convergence-shape`.
+- `derivation-gap` is what makes the `frontload-audit` self-improving across
+  runs.
+
+---
+
 ## Shared causes (in every prompt)
 
 - `derivation-gap` — blocked on something derivation could have asked for
@@ -90,9 +98,3 @@ naming each searched axis/queue class and why no safe continuation remains.
 - open-ended "make it better" with no pass line → `frontier`
 - product-promise discovery / reconciliation → `story`
 - target / artifact / evaluator undefined → `greenfield`
-
-## Composition notes
-
-- The stop cause matches the archetype's `convergence-shape`.
-- `derivation-gap` is what makes the `frontload-audit` self-improving across
-  runs.

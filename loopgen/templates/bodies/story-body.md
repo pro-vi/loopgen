@@ -29,6 +29,8 @@ project-management digest.
 
 {{INCLUDE primitives/judgment-default.md}}
 
+{{INCLUDE primitives/evidence-tier.md}}
+
 ## Frontload
 
 {{FRONTLOAD_PREAMBLE}}

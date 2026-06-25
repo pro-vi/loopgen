@@ -42,7 +42,8 @@ composed prompt.
      Mechanical run contract · Bootstrap · (Surface Taste Lane — conditional).
    - `greenfield`: 11 invariants · Capability surface · Phase gates.
 8. **Signal hierarchy** — `primitives/evidence-tier.md`. Carried by the
-   `frontier` / `story` / `greenfield` bodies; **not** `goal` (which relies on
+   `frontier` (inline) / `story` / `greenfield` (via `{{INCLUDE}}`) bodies;
+   **not** `goal` (which relies on
    oracle principles + the acceptance inventory as its evidence surface). Do
    not add a standalone Signal-hierarchy section to a `goal` prompt — `goal`
    relies on oracle principles + the acceptance inventory as its evidence
