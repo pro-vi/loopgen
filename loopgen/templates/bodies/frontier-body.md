@@ -110,7 +110,8 @@ The iteration trusts memory surfaces in this order:
 If only weak sources exist, anti-collapse coverage is degraded.
 Creating a minimal structured findings surface is itself a valid
 evaluator-axis job when the cheap channel is green and no stronger
-signal is available.
+signal is available. Never emit language that pretends anti-collapse
+coverage exists when the substrate for it does not.
 
 ## Homeostasis
 
