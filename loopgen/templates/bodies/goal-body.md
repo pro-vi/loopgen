@@ -77,6 +77,8 @@ replan → 11 `STUCK`, switch criterion.
 
 {{INCLUDE primitives/judgment-default.md}}
 
+{{INCLUDE primitives/external-trust-boundary.md}}
+
 ## Frontload
 
 {{FRONTLOAD_PREAMBLE}}

@@ -150,6 +150,7 @@ and composition proceeds):**
 - `templates/composed-prompt.md`
 - `primitives/runner-contract.md`
 - `primitives/judgment-default.md`
+- `primitives/external-trust-boundary.md`
 - `primitives/evidence-tier.md`
 - `primitives/halt-cause-classifier.md`
 - `primitives/queue-as-second-artifact.md`
@@ -601,7 +602,8 @@ write a ⚠️ block to `.loop/<loop-id>/STATE.md`.
 
 - `primitives/` — the vocabulary. Axes (`target-shape`, `halt-shape`,
   `artifact-shape`, `convergence-shape`, `cadence-shape`, `consult-capability`)
-  + shared blocks (`runner-contract`, `judgment-default`, `evidence-tier`,
+  + shared blocks (`runner-contract`, `judgment-default`,
+  `external-trust-boundary`, `evidence-tier`,
   `frontload-audit`, `halt-cause-classifier`, `diagnostic-pattern`,
   `evaluator-maturity`, `queue-as-second-artifact`, `context-stack`, `pressure`,
   `pressure-accounting`, `frontier-vector-adequacy`, `human-look-gate`) and
