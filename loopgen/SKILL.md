@@ -340,6 +340,18 @@ conflict between authoritative-current sources — exactly as
 rule). Every body's Halt-cause classifier section cites this list, not a
 paraphrase.
 
+Before emit, derive the **mandatory-write set** from the artifact contracts,
+one-time bootstrap actions, active overlays, and every acceptance verifier or
+output path. Compare each path with the emitted binary allowed/forbidden scope.
+A mandatory product write outside the allowed set or inside the forbidden set is
+a `derivation-gap`: stop composition and resolve the contradiction instead of
+silently widening scope. The host-repository `.gitignore` guard and any required
+`git rm -r --cached` of already-tracked `.loop/` paths are the sole
+operational-bootstrap exception. The emitted prompt must name that exception
+beside its scope manifest and limit it to protecting `.loop/`; it does not
+authorize any other `.gitignore` edit. All other mandatory writes must pass the
+same scope comparison.
+
 ## Artifact + state contracts
 
 Every file-backed emission writes the same canonical anchors. Repo-native paths

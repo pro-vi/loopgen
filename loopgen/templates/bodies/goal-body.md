@@ -67,11 +67,11 @@ scan first. The Halt section below carries the full classifier.
 **Iteration skeleton** (the numbered protocol below is authoritative):
 0 PINNED read (pressure render+read, `STATE.md`) → 1 WORKING read
 (`ACCEPTANCE.md` index + current sections, journal tail) → 2 oracle-integrity
-check → 3 final-verify when all `PASS_PENDING_FINAL` → 4 pick one OPEN
-criterion → 5 pre-register the attempt → 6 small reversible change + cheap
-channel → 7 criterion verifier + impact guards → 8 accept or revert, append
-the `attempt` record → 9 `PASS_PENDING_FINAL`, not `PASS` → 10 item-scoped
-replan → 11 `STUCK`, switch criterion.
+check → 3 terminal preflight, then final-verify when all `PASS_PENDING_FINAL` →
+4 pick one OPEN criterion → 5 pre-register the attempt → 6 small reversible
+change + cheap channel → 7 criterion verifier + impact guards → 8 accept or
+revert, append the `attempt` record → 9 `PASS_PENDING_FINAL`, not `PASS` → 10
+item-scoped replan → 11 `STUCK`, switch criterion.
 
 {{INCLUDE primitives/runner-contract.md}}
 
@@ -129,7 +129,11 @@ manual confidence, or "all easy rows done."
 ## Goal version
 
 `{{GOAL_VERSION}}` — fingerprint of the frozen inventory + authority
-sources + final-verify.
+sources + final-verify + scope baseline.
+
+`{{SCOPE_BASELINE}}` is the immutable compose-time Git commit from which this
+goal measures its complete product diff. A missing or moving baseline is a
+`derivation-gap`; do not infer it at terminal time.
 
 If an authoritative source changes mid-run, do **not** silently absorb it.
 Stop, record the source change, and re-derive a new goal version — unless
@@ -249,8 +253,25 @@ regression risk.
    - no snapshot refreshed without a semantic assertion,
    - no expected evidence weakened.
 3. If every criterion is `PASS_PENDING_FINAL` or `PASS` (per the index), run
-   the **final-verify**. Only the final-verify writes `.loop/<loop-id>/VERIFY.md`
-   — it stays a header-only "final-verify not yet run" placeholder every other
+   the **terminal preflight** before the final-verify:
+   - repeat the oracle-integrity check;
+   - reconcile the acceptance index totals, statuses, and dependency states;
+   - prove the frozen baseline is an ancestor of the terminal commit with
+     `git merge-base --is-ancestor {{SCOPE_BASELINE}} HEAD`;
+   - enumerate every committed path since that baseline with
+     `git diff --no-renames --name-only {{SCOPE_BASELINE}}...HEAD`, plus staged,
+     unstaged, and untracked paths with
+     `git diff --cached --no-renames --name-only`,
+     `git diff --no-renames --name-only`, and
+     `git ls-files --others --exclude-standard`; compare every result with the
+     binary allowed/forbidden scope manifest. `--no-renames` exposes both sides
+     of a move so a forbidden source path cannot disappear behind an allowed
+     destination.
+   If any preflight line fails, do **not** start the final-verify. Repair or
+   revert an in-scope defect; if the manifest contradicts a mandatory write,
+   emit `derivation-gap` and stop. Only after the preflight passes, run the
+   **final-verify**. Only the final-verify writes `.loop/<loop-id>/VERIFY.md` —
+   it stays a header-only "final-verify not yet run" placeholder every other
    pass (never mirror `ACCEPTANCE.md` into it). If the final-verify proves the
    whole inventory in the same repo state: set all to `PASS`, write
    `.loop/<loop-id>/VERIFY.md` with the matrix, emit `criteria-met` →
@@ -330,6 +351,15 @@ emit `oracle-drift` and stop.
 ## Rules
 
 {{SCOPE_MANIFEST}}
+
+### Operational bootstrap scope
+
+When this prompt carries a binary scope manifest, it governs every product and
+evidence write. The host-repository `.gitignore` guard for `.loop/` and any
+required `git rm -r --cached` of already-tracked `.loop/` paths are the sole
+operational-bootstrap exception, allowed only to keep loop records local. This
+does not authorize any other `.gitignore` edit. Every other mandatory write must
+be inside Allowed and outside Forbidden; a contradiction is a `derivation-gap`.
 
 ### Partial completion is not success
 
@@ -482,7 +512,9 @@ Placeholders populated during derivation (see SKILL.md):
   `primitives/queue-as-second-artifact.md` (queue growth discipline + INDEX/FULL
   row split) at compose (step 2).
 - `{{GOAL_VERSION}}` — fingerprint of criteria + provenance + authority +
-  final-verify.
+  final-verify + scope baseline.
+- `{{SCOPE_BASELINE}}` — immutable compose-time Git commit from which the goal
+  product diff is measured.
 - `{{REGRESSION_MODE}}` — omit unless this is a rerun (then: "Regression
   mode for goal version X — same frozen inventory, same final-verify").
 - `{{CHEAP_CHANNEL}}` — exact command.

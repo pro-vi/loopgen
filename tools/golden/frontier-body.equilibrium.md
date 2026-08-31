@@ -858,6 +858,14 @@ spend accounting; unaffordable → the candidate stays `pending` /
 
 Scope: loopgen prompt contracts and references.
 
+**Operational bootstrap scope.** When this prompt carries a binary scope
+manifest, it governs every product and evidence write. The host-repository
+`.gitignore` guard for `.loop/` and any required `git rm -r --cached` of
+already-tracked `.loop/` paths are the sole operational-bootstrap exception,
+allowed only to keep loop records local. This does not authorize any other
+`.gitignore` edit. Every other mandatory write must be inside Allowed and
+outside Forbidden; a contradiction is a `derivation-gap`.
+
 ### End-of-iteration transaction
 
 An iteration is not durable until evidence, ledger, validator, and git state

@@ -19,6 +19,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -464,6 +465,7 @@ ARCHETYPE_BODY_PLACEHOLDERS = {
     },
     "goal": {
         "GOAL_VERSION": "goal-v1-fixture",
+        "SCOPE_BASELINE": "0123456789abcdef0123456789abcdef01234567",
         "REGRESSION_MODE": "",
         "STUCK_ATTEMPT_N": "3",
         "CHEAP_CHANNEL": "make check",
@@ -854,6 +856,145 @@ def halt_shared_cause_violations() -> list[str]:
     if "source conflict" not in frontier:
         v.append("frontier genuine-escalate dropped 'source conflict'")
     return v
+
+
+def scope_terminal_preflight_violations() -> list[str]:
+    """Mandatory writes must fit scope, and cheap terminal checks must gate proof."""
+    violations: list[str] = []
+    skill = one_line(read(SKILL))
+    goal_template = one_line(raw_body_template(GOAL_BODY))
+    frontier_template = one_line(raw_body_template(FRONTIER_BODY))
+    goal_render = render_body("goal")
+
+    for pin, name in (
+        ("mandatory-write set", "required-write derivation"),
+        ("stop composition and resolve the contradiction", "composition stop"),
+        ("sole operational-bootstrap exception", "bootstrap exception boundary"),
+    ):
+        if pin not in skill:
+            violations.append(f"SKILL Phase 3 missing {name} (`{pin}`)")
+
+    for template, archetype in (
+        (goal_template, "goal"),
+        (frontier_template, "frontier"),
+    ):
+        for pin in (
+            "host-repository `.gitignore` guard for `.loop/`",
+            "does not authorize any other `.gitignore` edit",
+            "Every other mandatory write must be inside Allowed and outside Forbidden",
+        ):
+            if pin not in template:
+                violations.append(
+                    f"{archetype} scope manifest missing bootstrap boundary (`{pin}`)"
+                )
+
+    for pin, name in (
+        ("**terminal preflight**", "terminal preflight"),
+        (
+            "git merge-base --is-ancestor "
+            "0123456789abcdef0123456789abcdef01234567 HEAD",
+            "scope-baseline ancestry gate",
+        ),
+        (
+            "git diff --no-renames --name-only "
+            "0123456789abcdef0123456789abcdef01234567...HEAD",
+            "committed-path scan",
+        ),
+        ("git diff --cached --no-renames --name-only", "staged-path scan"),
+        ("git diff --no-renames --name-only", "unstaged-path scan"),
+        ("git ls-files --others --exclude-standard", "untracked-path scan"),
+        ("forbidden source path cannot disappear", "rename-source coverage"),
+        ("do **not** start the final-verify", "preflight failure gate"),
+        ("Only after the preflight passes", "preflight success gate"),
+        ("immutable compose-time Git commit", "scope baseline authority"),
+    ):
+        if pin not in goal_render:
+            violations.append(f"goal render missing {name} (`{pin}`)")
+
+    preflight_position = goal_render.find("**terminal preflight**")
+    final_verify_position = goal_render.find("Only after the preflight passes")
+    if (
+        preflight_position == -1
+        or final_verify_position == -1
+        or preflight_position >= final_verify_position
+    ):
+        violations.append("goal terminal preflight does not precede final verification")
+
+    return violations
+
+
+def terminal_path_scan_executable_violations() -> list[str]:
+    """Run the emitted Git scan shape over every worktree change category."""
+    try:
+        with tempfile.TemporaryDirectory(prefix="loopgen-terminal-preflight-") as tmp:
+            fixture = Path(tmp)
+
+            def git(*args: str) -> subprocess.CompletedProcess[str]:
+                return subprocess.run(
+                    ["git", *args],
+                    cwd=fixture,
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
+
+            git("init", "-q")
+            git("config", "user.name", "Loopgen Fixture")
+            git("config", "user.email", "loopgen-fixture@example.invalid")
+            (fixture / "allowed").mkdir()
+            (fixture / "forbidden").mkdir()
+            (fixture / "allowed/staged.txt").write_text("base\n", encoding="utf-8")
+            (fixture / "allowed/unstaged.txt").write_text("base\n", encoding="utf-8")
+            (fixture / "forbidden/renamed.txt").write_text("base\n", encoding="utf-8")
+            git("add", ".")
+            git("commit", "-qm", "fixture baseline")
+            baseline = git("rev-parse", "HEAD").stdout.strip()
+
+            (fixture / "allowed/committed.txt").write_text(
+                "committed\n", encoding="utf-8"
+            )
+            git("mv", "forbidden/renamed.txt", "allowed/renamed.txt")
+            git("add", "allowed/committed.txt")
+            git("commit", "-qm", "fixture committed changes")
+            (fixture / "allowed/staged.txt").write_text("staged\n", encoding="utf-8")
+            git("add", "allowed/staged.txt")
+            (fixture / "allowed/unstaged.txt").write_text(
+                "unstaged\n", encoding="utf-8"
+            )
+            (fixture / "allowed/untracked.txt").write_text(
+                "untracked\n", encoding="utf-8"
+            )
+
+            git("merge-base", "--is-ancestor", baseline, "HEAD")
+            scans = (
+                git("diff", "--no-renames", "--name-only", f"{baseline}...HEAD"),
+                git("diff", "--cached", "--no-renames", "--name-only"),
+                git("diff", "--no-renames", "--name-only"),
+                git("ls-files", "--others", "--exclude-standard"),
+            )
+            observed = {
+                path
+                for scan in scans
+                for path in scan.stdout.splitlines()
+                if path
+            }
+    except (OSError, subprocess.CalledProcessError) as exc:
+        return [f"terminal path scan fixture failed to execute: {exc}"]
+
+    expected = {
+        "allowed/committed.txt",
+        "allowed/renamed.txt",
+        "allowed/staged.txt",
+        "allowed/unstaged.txt",
+        "allowed/untracked.txt",
+        "forbidden/renamed.txt",
+    }
+    if observed != expected:
+        return [
+            "terminal path scan fixture coverage mismatch: "
+            f"expected={sorted(expected)} observed={sorted(observed)}"
+        ]
+    return []
 
 
 def _flat(s: str) -> str:
@@ -2956,6 +3097,23 @@ def run_checks() -> int:
     )
 
     # ── U13: pre-ship hardening (ADR 0004 amendment) ────────────────────────
+    scope_preflight = scope_terminal_preflight_violations()
+    checks.append(
+        require(
+            not scope_preflight,
+            "required_writes_scoped_and_terminal_preflight_gates_final_verify",
+            "; ".join(scope_preflight),
+        )
+    )
+    terminal_path_scan = terminal_path_scan_executable_violations()
+    checks.append(
+        require(
+            not terminal_path_scan,
+            "terminal_preflight_git_scan_executable_fixture",
+            "; ".join(terminal_path_scan),
+        )
+    )
+
     hardening = u13_hardening_violations()
     checks.append(
         require(
