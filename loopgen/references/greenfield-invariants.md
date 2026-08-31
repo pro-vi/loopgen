@@ -44,7 +44,10 @@ involving clarity, narrative, comprehension, audience fit, persuasion, or
 memorability: scores above 3 require a blind read — send the artifact to
 a fresh isolated session (LLM via the invariant-8 CONSULT channel, or a
 human reviewer) **without** the rubric, prompt, internal rationale, or
-current scores. Ask: *"what is this trying to do? what did you
+current scores, but only after the External trust boundary authorizes that
+destination and the packet has been minimized and scrubbed of restricted data.
+If disclosure is not authorized, keep the criterion capped and use the local
+Human-look gate. Ask: *"what is this trying to do? what did you
 understand? what felt missing, confusing, derivative, or hollow?"*
 Compare to the artifact's `comprehensionClaim`. Cap the criterion at 2
 if no blind read was run; cap at 3 if the blind read substantially
@@ -103,9 +106,11 @@ style/voice emergence, agent experience, creative direction.
 
 ### 6. CAPABILITY mode is first-class
 
-Green-field loops *grow capability* — install new tools, integrate new
-substrates, wire new modalities — when those advance the stone. This is not
-"yak-shaving"; it's the loop's job. Encode CAPABILITY as priority 0 or 1
+Green-field loops *grow capability* — install pre-authorized tools, integrate
+approved substrates, wire approved modalities — when those advance the stone.
+New dependencies, plugins, binaries, extensions, MCP servers, or remote
+installers remain authority-needing under the External trust boundary. This is
+not "yak-shaving"; it's the loop's job. Encode CAPABILITY as priority 0 or 1
 in the mode menu, with the discipline rule: **must advance the stone, not
 pad the toolbelt.** Each addition justified against a stone-axis.
 
@@ -143,7 +148,9 @@ the consultant is allowed and sometimes correct. Capture into
 scores, the loop's preferred next plan, and self-justifying rationale.
 It contains: the user's original intent + later reframes, current
 INTENT.md hypotheses, representative artifacts or excerpts, the current
-rubric criteria *without scores*, and known constraints. Ask:
+rubric criteria *without scores*, and known constraints. Minimize this packet,
+remove secrets and restricted data, and send it only to an explicitly authorized
+destination under the External trust boundary. Ask:
 
 1. What current target should be killed or demoted?
 2. What's seductive-but-hollow about recent progress?

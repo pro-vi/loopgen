@@ -38,6 +38,11 @@ externally blocked, or requires authority the loop cannot establish:
 - paid APIs without budget caps,
 - public-publish or messages-sent actions,
 - secrets / credentials,
+- external disclosure of repository, connector, personal, customer, or other
+  restricted data without destination-specific authorization,
+- installation or execution of a new dependency, package, plugin, extension,
+  MCP server, downloaded binary, or remote installer without source-specific
+  authorization,
 - product-direction changes whose rollback is unclear,
 - source conflict between authoritative-current sources.
 

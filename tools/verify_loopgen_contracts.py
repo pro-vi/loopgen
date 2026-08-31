@@ -37,6 +37,7 @@ PRESSURE_ACCOUNTING = ROOT / "loopgen/primitives/pressure-accounting.md"
 SUBAGENT_PATTERNS = ROOT / "loopgen/primitives/subagent-patterns.md"
 HUMAN_LOOK_GATE = ROOT / "loopgen/primitives/human-look-gate.md"
 CONSULT_CAPABILITY = ROOT / "loopgen/primitives/consult-capability.md"
+EXTERNAL_TRUST_BOUNDARY = ROOT / "loopgen/primitives/external-trust-boundary.md"
 BENCHMARK_ARTIFACTS = ROOT / "loopgen/references/benchmark-frontier-artifacts.md"
 BENCHMARK_EXAMPLE = ROOT / "loopgen/references/benchmark-frontier-example.md"
 FRONTLOAD_AUDIT = ROOT / "loopgen/primitives/frontload-audit.md"
@@ -3574,6 +3575,39 @@ def run_checks() -> int:
             + ", ".join(missing_tokens(frontload_flat, CLOSURE_BASIS_KEYS)),
         )
     )
+
+    trust_marker = "## External trust boundary"
+    trust_pins = (
+        "Availability is not authorization.",
+        "Before every commit, inspect the staged diff for secrets and restricted connector-derived content.",
+        "Installing or executing a new dependency, package, plugin, extension, MCP server, downloaded binary, or remote installer is authority-needing",
+    )
+    trust_source_flat = one_line(read(EXTERNAL_TRUST_BOUNDARY))
+    checks.append(
+        require(
+            trust_marker in read(EXTERNAL_TRUST_BOUNDARY)
+            and all(pin in trust_source_flat for pin in trust_pins),
+            "external_trust_boundary_source_contract",
+            "source primitive is missing its heading or a required security guard",
+        )
+    )
+    for archetype in BODY_PATHS:
+        rendered = render_body(archetype)
+        rendered_flat = one_line(rendered)
+        checks.append(
+            require(
+                rendered.count(trust_marker) == 1,
+                f"{archetype}_external_trust_boundary_once",
+                f"expected one {trust_marker!r}, found {rendered.count(trust_marker)}",
+            )
+        )
+        checks.append(
+            require(
+                all(pin in rendered_flat for pin in trust_pins),
+                f"{archetype}_external_trust_boundary_pins",
+                "rendered prompt is missing disclosure, staged-diff, or supply-chain guard",
+            )
+        )
 
     ok = True
     for passed, line in checks:

@@ -6,6 +6,8 @@
 .launch/
 dev/
 **/logs/
+__pycache__/
+*.py[cod]
 
 # machine-local tooling state (never commit)
 .prov/
