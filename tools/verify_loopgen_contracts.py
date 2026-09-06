@@ -464,6 +464,7 @@ ARCHETYPE_BODY_PLACEHOLDERS = {
         "REVIEW_CLOSURE_OVERLAY": "",
     },
     "goal": {
+        "MOTIVE": "Make the fixture acceptance inventory pass in one repo state.",
         "GOAL_VERSION": "goal-v1-fixture",
         "SCOPE_BASELINE": "0123456789abcdef0123456789abcdef01234567",
         "REGRESSION_MODE": "",
@@ -476,11 +477,13 @@ ARCHETYPE_BODY_PLACEHOLDERS = {
         "REPO_SPECIFIC_OVERLAY": "",
     },
     "story": {
+        "MOTIVE": "Verify the fixture storyboard's chapters against the running surface.",
         "LANE": "Surface Taste Lane",
         "SURFACE_CLASS": "fixture surface",
         "STORYBOARD_PATH": "docs/storyboard.md",
     },
     "greenfield": {
+        "MOTIVE": "Build something adjacent to the fixture target from zero.",
         "CAPABILITY_LIST": "- none yet.",
         "INVARIANTS": "1. Fixture invariant placeholder.",
         "PHASE_GATES": "- research: owner loop, status yes",
@@ -1397,6 +1400,66 @@ def state_key_mirror_violations() -> list[str]:
                 f"{a} STATE-key mirror mismatch: SKILL={sorted(skill_arch[a])} "
                 f"context-stack={sorted(ck)}"
             )
+    return v
+
+
+# Each archetype's render must not carry the sentence that names another
+# archetype's shape: the goal fixture once inherited the frontier motive and
+# rendered "finite acceptance inventory" beside "without a fixed finish line"
+# while every check passed (inbox 2026-07-30). Motive is per-archetype now;
+# this pins the semantic, not the token. Story and greenfield are not pinned:
+# their reroute tables legitimately name both sibling shapes.
+ARCHETYPE_FOREIGN_SENTENCES = {
+    "goal": ("without a fixed finish line",),
+    "frontier": ("finite acceptance inventory",),
+}
+
+
+def archetype_motive_violations() -> list[str]:
+    v: list[str] = []
+    for archetype, foreign in ARCHETYPE_FOREIGN_SENTENCES.items():
+        flat = one_line(render_body(archetype))
+        for sentence in foreign:
+            if sentence in flat:
+                v.append(f"{archetype} render carries foreign-shape sentence: {sentence!r}")
+    return v
+
+
+def _context_stack_key_fields(cs: str, record_type: str) -> set[str]:
+    """The backticked field names in the `Key fields` cell of one journal
+    table row."""
+    i = cs.find("Record types (`t`)")
+    if i == -1:
+        return set()
+    m = re.search(r"(?m)^\|\s*`" + re.escape(record_type) + r"`\s*\|[^|]*\|([^|]*)\|", cs[i:])
+    if not m:
+        return set()
+    return set(re.findall(r"`([a-z_]+)`", m.group(1)))
+
+
+def oracle_change_example_violations() -> list[str]:
+    """The goal body's `oracle_change` example must be one valid JSON line whose
+    keys cover the context-stack schema row plus the `t`/`iter` envelope — a
+    runner copying the example literally must produce a parseable JOURNAL.jsonl
+    record (inbox 2026-07-30 found a YAML-like block with divergent keys)."""
+    import json
+    v: list[str] = []
+    goal = read(ROOT / "loopgen/templates/bodies/goal-body.md")
+    m = re.search(r'```json\n(\{"t":"oracle_change"[^\n]*)\n```', goal)
+    if not m:
+        return ["goal-body has no ```json oracle_change example line"]
+    try:
+        rec = json.loads(m.group(1))
+    except json.JSONDecodeError as e:
+        return [f"goal-body oracle_change example is not valid JSON: {e}"]
+    required = {"t", "iter"} | _context_stack_key_fields(read(CONTEXT_STACK), "oracle_change")
+    if not required - {"t", "iter"}:
+        v.append("context-stack oracle_change row has no key fields")
+    missing = sorted(required - set(rec))
+    if missing:
+        v.append(f"goal-body oracle_change example missing schema fields: {missing}")
+    if rec.get("t") != "oracle_change" or not isinstance(rec.get("iter"), int):
+        v.append("goal-body oracle_change example envelope: t must be 'oracle_change', iter an int")
     return v
 
 
@@ -3030,6 +3093,14 @@ def run_checks() -> int:
             "journal_record_types_consistent",
             "; ".join(journal_enum),
         )
+    )
+    motive = archetype_motive_violations()
+    checks.append(
+        require(not motive, "archetype_render_no_foreign_shape_sentence", "; ".join(motive))
+    )
+    oc = oracle_change_example_violations()
+    checks.append(
+        require(not oc, "oracle_change_example_matches_journal_schema", "; ".join(oc))
     )
 
     # ── U1-c1: Operational core body-carried + first-80 in every render ─────

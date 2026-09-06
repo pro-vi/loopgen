@@ -333,20 +333,17 @@ The headline failure mode. The loop must not:
 which is live status only — `primitives/context-stack.md`; this is the former
 `oracle_change_notes` STATE key relocated to its history tier):
 
-```text
-oracle_change:
-  criterion: AC-XXX
-  source_criterion_unchanged: yes
-  old_verifier: <cmd>
-  new_verifier: <cmd>
-  fault: false-positive | false-negative | flake | missing-evidence-hook | non-deterministic
-  strictness_proof: <mutation, red/green pair, or sentinel showing new >= old>
-  why_not_acceptance_weakening: <one line>
-  rollback_trigger: <condition>
+One JSON object per line, the `t` / `iter` envelope plus the fields
+`primitives/context-stack.md` names for `oracle_change`. The criterion
+itself never changes — only its verifier — so `ac` is the unchanged id:
+
+```json
+{"t":"oracle_change","iter":12,"ac":"AC-004","from":"<old verifier cmd>","to":"<new verifier cmd>","fault":"false-positive","strictness_proof":"<mutation, red/green pair, or sentinel showing new >= old>","why":"<why this is not an acceptance weakening>","rollback_trigger":"<condition>"}
 ```
 
-If strictness-preservation cannot be proved, restore the old verifier or
-emit `oracle-drift` and stop.
+`fault` is one of `false-positive`, `false-negative`, `flake`,
+`missing-evidence-hook`, `non-deterministic`. If strictness-preservation
+cannot be proved, restore the old verifier or emit `oracle-drift` and stop.
 
 ## Rules
 
