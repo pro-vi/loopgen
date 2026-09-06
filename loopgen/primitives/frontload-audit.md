@@ -50,6 +50,37 @@ For each checklist item, do exactly one of:
 - **Evidence surface** — build / test / run commands; artifact / ledger /
   findings paths.
 - **Scope manifest** — allowed / forbidden globs, or `none`.
+- **Contact check** — every frontload item that names a repository path, a
+  grep-shaped verifier, or a command the runner will execute is checked
+  against the baseline checkout before the prompt is emitted. The composer has
+  the same checkout open and pays nothing per check; the runner pays an
+  `alignment_review` (or an `oracle_change` with strictness proof) per
+  correction. The runner's verify-at-contact rule stays as the safety net, not
+  the first line. Three checks:
+  1. *Manifest coverage* — the allowed set is the plan's files, plus every
+     file that references a symbol the plan deletes or renames (`grep -rln
+     '<symbol>'` over source, tests, scripts, and docs, per symbol), plus
+     every doc the repo's own spec gate maps to a touched route or module.
+     Each extra hit is added to the allowed set or named in the prompt as
+     deliberately out of scope with the reason. A file the loop must touch but
+     the manifest forbids is a derivation gap at compose time, not at
+     iteration 3.
+  2. *Verifier hit list* — each grep-shaped verifier is run once at the
+     baseline commit and every hit is read. A hit is either a target the loop
+     is meant to remove or an exclusion the verifier carries from the start (a
+     path filter, `--exclude='*.test.ts'`, a tighter pattern). A verifier
+     whose baseline hits include something the loop must not change is not
+     emittable: the named red must be a red the loop is supposed to turn green
+     (`references/oracle-principles.md` invariant 7).
+  3. *Command form* — a command the runner will execute against an external
+     system (a one-off job start, a deploy poll, a CLI with a documented
+     calling convention) is matched against the repo's runbook or the tool's
+     help output at compose time, and the runbook line is cited beside the
+     command in the prompt.
+  Evidence: `.inbox/.read/2026-09-06-frontload-contact-check.md` — a goal loop
+  that shipped with no halt still paid 4 scope widenings, 1 `oracle_change`,
+  and 1 production command corrected at contact, all traceable to repository
+  facts stated at compose without opening the repository.
 - **Known false-green zones** — tests / suites that pass without validating.
 - **Forbidden shortcuts** — `--no-verify`, mocked integration, assertion-free
   fixtures, snapshot refresh without semantic proof.
