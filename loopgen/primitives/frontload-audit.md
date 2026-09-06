@@ -77,10 +77,10 @@ For each checklist item, do exactly one of:
      calling convention) is matched against the repo's runbook or the tool's
      help output at compose time, and the runbook line is cited beside the
      command in the prompt.
-  Evidence: `.inbox/.read/2026-09-06-frontload-contact-check.md` — a goal loop
-  that shipped with no halt still paid 4 scope widenings, 1 `oracle_change`,
-  and 1 production command corrected at contact, all traceable to repository
-  facts stated at compose without opening the repository.
+  Earned from a goal loop that shipped with no halt and still paid 4 scope
+  widenings, 1 `oracle_change`, and 1 production command corrected at
+  contact, all traceable to repository facts stated at compose without
+  opening the repository.
 - **Known false-green zones** — tests / suites that pass without validating.
 - **Forbidden shortcuts** — `--no-verify`, mocked integration, assertion-free
   fixtures, snapshot refresh without semantic proof.

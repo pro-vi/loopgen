@@ -604,7 +604,7 @@ write a ⚠️ block to `.loop/<loop-id>/STATE.md`.
 | Direction | Skill | Relationship |
 |---|---|---|
 | upstream | a planning / blueprint skill | conceptual parent; a blueprint's units + decisive choice are a first-class `goal` criteria source |
-| upstream | an oracle / verifier-design helper | complementary for the `goal` archetype's verifier matrix |
+| upstream | a testability / oracle-ramp helper | establishes what the repo can already prove per boundary, so the `goal` verifier matrix binds provable criteria |
 | downstream | `/goal` | canonical runner that executes the emitted `.loop/<loop-id>/PROMPT.md`; `/goal` is the runner, not the `goal` archetype |
 | downstream | an upstream orchestrator | may still name the removed loop commands; repoint to `/loopgen` |
 | sibling | `frontier-loop`, `goal-loop`, `story-loop`, `greenfield-loop` | retired and removed; their archetype cores live in `archetypes/*.md` |
