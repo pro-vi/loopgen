@@ -50,6 +50,22 @@ For each checklist item, do exactly one of:
 - **Evidence surface** — build / test / run commands; artifact / ledger /
   findings paths.
 - **Scope manifest** — allowed / forbidden globs, or `none`.
+- **Wait channels** — every external wait the loop will do (a deploy to
+  confirm, a review bot's round, a submitted job, a timed hold) named with the
+  observable that ends it (a comment id past a watermark, a deploy status, a
+  job status, a clock) and the runner's non-blocking wait form for it. A wait
+  the prompt phrases as "poll for up to N minutes" from the foreground is a
+  cost line, not a pattern; see `runner-contract.md` and pattern C.
+- **Review closure** — when the loop will run a review at all (its own review
+  pass, a bot's rounds, a human's), name what closes it, per channel. A review
+  reads a commit range and the commit that fixes its findings falls outside
+  that range, so a loop that fixes every finding and stops has shipped
+  unreviewed code — a wrong fix and a defect born in the fix are exactly what
+  no finding's verifier is watching for. Closure is the reviewing channel run
+  again over the fix commit, or a review surface that does delta passes on fix
+  commits by construction. Earned from a goal loop that closed 29 findings in
+  one fix commit no pass had read; the external rounds that followed kept
+  finding real defects born in fix commits, through seven of eight rounds.
 - **Contact check** — every frontload item that names a repository path, a
   grep-shaped verifier, or a command the runner will execute is checked
   against the baseline checkout before the prompt is emitted. The composer has

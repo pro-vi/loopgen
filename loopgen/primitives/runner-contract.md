@@ -65,6 +65,14 @@ External ceilings (token limits, max-iterations, session length) are
 runner concerns, not repository failure. Preserve the worktree and
 summarize unresolved work for the next run.
 
+Waiting on something external (a deploy, a review bot's round, a
+submitted job, a timed hold) must not spend turns: never wait through a
+foreground call that sleeps and re-checks, because every such call is
+charged the whole conversation context. Arm the runner's non-blocking
+wait (in Claude Code: `Monitor`, or Bash `run_in_background` with an
+`until` loop that exits when the condition holds), then do other loop
+work or end the iteration; act when the event arrives.
+
 Accepted-iteration commits are authorized by default. Every accepted iteration
 that changes tracked files must end with one focused Conventional Commit after
 the evidence and canonical artifacts are updated, validators run, and

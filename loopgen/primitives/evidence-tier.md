@@ -40,6 +40,9 @@ in place of the hierarchy.
 
 1. **Externally reviewed findings** — human or external-review output the loop
    did not author. Highest authority; independent of the loop's own narrative.
+   Its authority stops at the commit range it read: the commit that fixes its
+   findings is code no review has seen, so "every finding fixed" is not "the
+   review is closed" — closure needs the same channel run again over the fix.
 2. **Typed / machine-derived artifacts** — structured run traces, harness
    state, oracle verdicts, benchmark outputs. Not self-narrated.
 3. **Self-authored ledger prose** — the loop's own notes / ledger / findings

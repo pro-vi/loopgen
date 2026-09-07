@@ -33,7 +33,7 @@ capability** — a deliberate simplification, not a precise capability probe.
 | **A** single-agent iteration | the existing per-iteration protocol every body emits | always — **not** part of this block |
 | **D** cheap separate second look | a quick *second look* at a result through a separate channel | tier ≥ 1 (tier-1 = async human-bridge handoff; tier ≥ 2 = programmatic) |
 | **B** parallel fan-out | split an investigation across separate agents (investigate / refute / cross-domain) and reconcile | tier 3 (blind-adversarial + multi-modal fabric) |
-| **C** long-experiment polling | submit a long job, poll it, auto-diagnose and resubmit on failure instead of blocking — under a durable job id + capped retry/backoff | tier 3, or tier ≥ 1 with a pollable job channel |
+| **C** long-experiment polling | submit a long job, wait on it through the runner's non-blocking wait primitive (never a foreground call that sleeps), auto-diagnose and resubmit on failure — under a durable job id + capped retry/backoff | tier 3, or tier ≥ 1 with a pollable job channel |
 
 **D is a second look, not a tribunal.** It exists to catch the loop's own
 *honest* mistakes (drift, a missed case), not to "prove" the loop didn't cheat —
@@ -103,10 +103,21 @@ they help**, never gates you must pass to accept an iteration.
   surface everything.
 - **C — long-experiment polling** *(consult tier 3, or tier ≥ 1 when frontload
   binds a pollable job channel — never at tier-0, where this block is stripped)*:
-  submit a long-running job, poll it, and auto-diagnose and resubmit on failure
-  instead of blocking the loop on it. Resubmit only under a **durable job
+  submit a long-running job, wait on it, and auto-diagnose and resubmit on
+  failure instead of blocking the loop on it. Resubmit only under a **durable job
   identity** (persisted job id / idempotency key) and a **capped retry with
-  backoff** — never an unbounded resubmit loop.
+  backoff** — never an unbounded resubmit loop. **The wait itself must cost no
+  turns.** A foreground call that sleeps and re-checks is charged the whole
+  conversation context on every call, and late in a loop that context is
+  hundreds of thousands of tokens per check (measured 2026-09-06: eight bot
+  review rounds waited from the foreground cost more than the review itself).
+  Wait through the runner's non-blocking primitive — in Claude Code, `Monitor`
+  (one event per new comment / job status, `persistent: true` for a
+  session-length watch) or Bash `run_in_background` with an `until` loop that
+  exits when the condition holds — and do other loop work, or end the
+  iteration, until the event arrives. The same rule covers every external wait
+  the frontload names (a deploy, a bot review round, a one-off job, a timed
+  hold), not only tier-3 experiments.
 
 Only the patterns at or below the compose-detected tier were emitted; the rest
 were dropped at compose. Emitted is not verified: a pattern is usable only

@@ -89,7 +89,10 @@ onto goal's own surfaces: **tier 1** — externally reviewed findings you did
 not author; **tier 2** — machine-derived proof (criterion-verifier output,
 final-verify results, oracle verdicts, recorded `pass_evidence` /
 `fail_evidence` runs); your own ledger prose and commit narrative are tier 3–4
-and never satisfy or retire a pressure row.
+and never satisfy or retire a pressure row. A tier-1 review is evidence about
+the tree it read: the commit that closes its findings is code no review has
+seen, so "all findings fixed" is not review closure — the same channel runs
+again over the fix commit.
 
 {{SUBAGENT_PATTERNS}}
 
