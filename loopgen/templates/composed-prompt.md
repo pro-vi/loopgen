@@ -41,6 +41,9 @@ composed prompt.
 4. **Runner contract** — ALWAYS (`primitives/runner-contract.md`).
 5. **Judgment default** — ALWAYS (`primitives/judgment-default.md`); in
    `greenfield` it is carried by invariant 7 instead, so it is not emitted twice.
+5a. **External trust boundary** — ALWAYS
+   (`primitives/external-trust-boundary.md`); capability detection never implies
+   disclosure, installation, or execution authority.
 6. **Frontload preamble** — ALWAYS via `{{FRONTLOAD_PREAMBLE}}`
    (`primitives/frontload-audit.md` output).
 6a. **Pressure surface** — ALWAYS via `{{PRESSURE_SURFACE}}`

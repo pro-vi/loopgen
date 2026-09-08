@@ -74,6 +74,8 @@ manual-gated continue.
 
 {{INCLUDE primitives/runner-contract.md}}
 
+{{INCLUDE primitives/external-trust-boundary.md}}
+
 ## Frontload
 
 {{FRONTLOAD_PREAMBLE}}
@@ -97,8 +99,9 @@ invariant 8 carries the consult contract** — do not also emit them separately.
 ## Capability surface
 
 CAPABILITY mode is first-class (invariant 6). The loop may install / integrate
-the following to advance the stone — each addition justified against a
-stone-axis, never to pad the toolbelt:
+only the following pre-authorized capability sources to advance the stone —
+each addition justified against a stone-axis, never to pad the toolbelt, and
+always subject to the External trust boundary:
 
 {{CAPABILITY_LIST}}
 

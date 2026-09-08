@@ -78,6 +78,8 @@ evidence → 6 promote or handoff → 7 reconcile.
 
 {{INCLUDE primitives/judgment-default.md}}
 
+{{INCLUDE primitives/external-trust-boundary.md}}
+
 {{INCLUDE primitives/evidence-tier.md}}
 
 ## Frontload
@@ -357,7 +359,11 @@ Inspect the strongest available sources. For generic frontend repos, prefer:
 When a work-tracking adapter (Linear, GitHub, vault, Slack — host-
 specific) is available and relevant, use it to synthesize context and
 record its findings as `kind: work`. Still preserve the underlying source
-type when known, such as `issue`, `vault`, `github`, or `slack`.
+type when known, such as `issue`, `vault`, `github`, or `slack`. Availability is
+not disclosure authority: apply the External trust boundary, retain the source's
+classification, prefer pointers or redacted summaries, and do not copy private
+connector content into tracked artifacts without authorization for that exact
+destination.
 
 ### 2. Enumerate or update candidate stories
 

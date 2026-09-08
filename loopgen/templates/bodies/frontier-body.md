@@ -74,6 +74,8 @@ commit → 9 provisional balance → full frontier scan → `homeostatic-checkpo
 
 {{INCLUDE primitives/judgment-default.md}}
 
+{{INCLUDE primitives/external-trust-boundary.md}}
+
 ## Frontload
 
 {{FRONTLOAD_PREAMBLE}}

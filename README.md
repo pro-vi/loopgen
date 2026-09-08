@@ -1,5 +1,9 @@
 # loopgen
 
+> **Security:** Loopgen composes prompts that may run unattended. External data
+> disclosure and software-supply-chain expansion require explicit authorization;
+> see [SECURITY.md](SECURITY.md) and the always-emitted External trust boundary.
+
 <p align="center"><strong>Prompt Compiler for creating long-running autonomous loops.</strong></p>
 
 <p align="center"><em>It writes the weather, not just the target — a re-readable pressure field that makes the wrong worlds harder to reach while the loop runs.</em></p>

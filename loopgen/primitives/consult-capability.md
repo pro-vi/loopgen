@@ -61,6 +61,9 @@ a consult channel exists.
 - `tier ≥ 2` enables the greenfield invariant-8 blind adversarial consult and
   the story Surface-Taste blind read; consult cadence aligns with
   `cadence-shape` boundaries.
+- Every consult remains subject to `external-trust-boundary.md`: channel
+  detection proves availability, never disclosure authority. Unauthorized or
+  unsanitized packets stay local and degrade to the Human-look gate.
 
 ## Run-host verification
 
