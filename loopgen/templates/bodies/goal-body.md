@@ -297,7 +297,7 @@ regression risk.
    sharper failure evidence), no passing criterion regresses, and the
    oracle was not weakened. Otherwise revert. Either way, append the resolved
    `attempt` record to `.loop/<loop-id>/JOURNAL.jsonl`
-   (`{iter, ac, action, verdict, evidence}`, evidence as a pointer, target ≤300
+   (`{iter, ac, action, hypothesis, verdict, evidence}`, evidence as a pointer, target ≤300
    chars) — the step-5 plan plus its outcome. This replaces the old unbounded
    per-attempt log that used to grow inside `.loop/<loop-id>/STATE.md`.
 9. If the criterion verifier passes, mark `PASS_PENDING_FINAL` — not

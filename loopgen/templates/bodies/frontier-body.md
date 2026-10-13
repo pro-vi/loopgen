@@ -413,7 +413,8 @@ agree. Before any halt, checkpoint, ticket switch, or anchor switch:
 2. Update the canonical live surfaces named by this prompt (the findings-ledger
    index + touched rows, `.loop/<loop-id>/STATE.md` live status), and append this
    iteration's history to `.loop/<loop-id>/JOURNAL.jsonl` — an `attempt` record
-   for the accepted/reverted change (≤300 chars, evidence as pointer) plus any
+   for the accepted/reverted change (≤300 chars, `hypothesis` from step 4's
+   intervention line, evidence as pointer) plus any
    `pressure` / `consult` / `checkpoint` / `halt` records this pass produced.
    `.loop/<loop-id>/STATE.md` never accumulates that history
    (`primitives/context-stack.md`).
